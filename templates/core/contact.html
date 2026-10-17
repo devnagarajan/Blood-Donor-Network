@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-3">
+        <!-- Contact Form - Right Side -->
+        <div class="col-lg-7 col-md-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h3 class="card-title mb-4 fw-bold" style="color: #2c3e50; font-size: 1.75rem;">Send us a Message</h3>
+                    
+                    <div class="row">
+                        <!-- Contact Info - Left Inside Form -->
+                        <div class="col-md-4 mb-4 mb-md-0">
+                            <div class="contact-info-list">
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="font-size: 1.5rem; color: #dc3545; margin-right: 10px;">✉️</div>
+                                        <div>
+                                            <p class="mb-0 fw-bold" style="color: #2c3e50; font-size: 0.9rem;">Email</p>
+                                            <a href="mailto:redfusion@gmail.com" class="text-muted text-decoration-none" style="font-size: 0.85rem;">redfusion@gmail.com</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="font-size: 1.5rem; color: #dc3545; margin-right: 10px;">📞</div>
+                                        <div>
+                                            <p class="mb-0 fw-bold" style="color: #2c3e50; font-size: 0.9rem;">Phone</p>
+                                            <a href="tel:+916385368201" class="text-muted text-decoration-none" style="font-size: 0.85rem;">+91 6385368201</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div style="font-size: 1.5rem; color: #dc3545; margin-right: 10px;">📍</div>
+                                        <div>
+                                            <p class="mb-0 fw-bold" style="color: #2c3e50; font-size: 0.9rem;">Address</p>
+                                            <p class="text-muted mb-0" style="font-size: 0.85rem;">Tenkasi, Tamilnadu</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="d-flex align-items-center">
+                                        <div style="font-size: 1.5rem; color: #dc3545; margin-right: 10px;">🕐</div>
+                                        <div>
+                                            <p class="mb-1 fw-bold" style="color: #2c3e50; font-size: 0.9rem;">Office Hours</p>
+                                            <p class="text-muted mb-0" style="font-size: 0.8rem; line-height: 1.4;">Mon-Fri: 9AM-6PM<br>Sat-Sun: 10AM-4PM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Fields - Right Inside Form -->
+                        <div class="col-md-8">
+                        
+                        <!-- Form Fields - Right Inside Form -->
+                        <div class="col-md-8">
+                    <form method="post" class="contact-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold" style="color: #2c3e50;">Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold" style="color: #2c3e50;">Email *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label fw-bold" style="color: #2c3e50;">Phone</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.subject.id_for_label }}" class="form-label fw-bold" style="color: #2c3e50;">Subject *</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger small mt-1">{{ form.subject.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label fw-bold" style="color: #2c3e50;">Message *</label>
+                            {{ form.message }}
+                            {% if form.message.errors %}
+                                <div class="text-danger small mt-1">{{ form.message.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger btn-lg px-4 py-2 contact-submit-btn" style="border-radius: 50px; font-weight: 600; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); transition: all 0.3s ease;">
+                            Send Message →
+                        </button>
+                    </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </div>
+</div>
+{% endblock %}

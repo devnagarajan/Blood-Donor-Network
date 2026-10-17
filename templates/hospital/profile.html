@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Hospital Profile - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4"><i class="fas fa-hospital text-primary"></i> Hospital Profile</h1>
+    
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="text-primary mb-3">Hospital Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Hospital Name:</th>
+                            <td>{{ hospital_profile.hospital_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Hospital Type:</th>
+                            <td>{{ hospital_profile.get_hospital_type_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>GST Number:</th>
+                            <td>{{ hospital_profile.gst_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Verification Status:</th>
+                            <td>
+                                {% if hospital_profile.verification_status == 'pending' %}
+                                    <span class="badge bg-warning">Pending Verification</span>
+                                {% elif hospital_profile.verification_status == 'verified' %}
+                                    <span class="badge bg-success">Verified ✓</span>
+                                {% elif hospital_profile.verification_status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <h4 class="text-primary mb-3 mt-4">Contact Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Phone:</th>
+                            <td>{{ hospital_profile.phone_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ hospital_profile.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>
+                                {{ hospital_profile.address }}<br>
+                                {{ hospital_profile.city }}, {{ hospital_profile.district }}<br>
+                                {{ hospital_profile.state }} - {{ hospital_profile.pincode }}
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <h4 class="text-primary mb-3 mt-4">Statistics</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Total Requests:</th>
+                            <td>{{ hospital_profile.total_requests }}</td>
+                        </tr>
+                        <tr>
+                            <th>Fulfilled Requests:</th>
+                            <td>{{ hospital_profile.fulfilled_requests }}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'hospitals:dashboard' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                        <a href="{% url 'hospitals:edit_profile' %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}RedFusion{% endblock %}</title>
+    
+    <!-- Favicon - Inline to prevent 404 errors -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❤️</text></svg>">
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="{% static 'css/style.css' %}" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
+    <!-- Font Awesome with async loading -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <div class="brand-container">
+                    <span class="brand-name">RedFusion</span>
+                    <small class="brand-tagline">Where Every Drop Counts</small>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:blood_camps_public' %}">Blood Camps</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:contact' %}">Contact</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if user.is_superuser or user.is_staff %}
+                                    <li><a class="dropdown-item" href="/admin/">🔐 Admin Panel</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
+                                {% elif user.is_donor %}
+                                    <li><a class="dropdown-item" href="{% url 'donors:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'donors:profile' %}">My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'donors:logout' %}">Logout</a></li>
+                                {% elif user.is_hospital %}
+                                    <li><a class="dropdown-item" href="{% url 'hospitals:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'hospitals:profile' %}">My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'hospitals:logout' %}">Logout</a></li>
+                                {% elif user.is_ngo %}
+                                    <li><a class="dropdown-item" href="{% url 'ngos:dashboard' %}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'ngos:profile' %}">My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'ngos:logout' %}">Logout</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown">
+                                Login
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'donors:login' %}">🩸 Donor Login</a></li>
+                                <li><a class="dropdown-item" href="{% url 'hospitals:login' %}">🏥 Hospital Login</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ngos:login' %}">🤝 NGO Login</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="registerDropdown" role="button" data-bs-toggle="dropdown">
+                                Register
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'donors:register' %}">Donor Registration</a></li>
+                                <li><a class="dropdown-item" href="{% url 'hospitals:register' %}">Hospital Registration</a></li>
+                                <li><a class="dropdown-item" href="{% url 'ngos:register' %}">NGO Registration</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show auto-dismiss-alert" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>RedFusion</h5>
+                    <p>Connecting donors, hospitals, and NGOs to save lives.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'core:home' %}" class="text-white text-decoration-none">Home</a></li>
+                        <li><a href="{% url 'core:about' %}" class="text-white text-decoration-none">About Us</a></li>
+                        <li><a href="{% url 'core:blood_camps_public' %}" class="text-white text-decoration-none">Blood Camps</a></li>
+                        <li><a href="{% url 'core:contact' %}" class="text-white text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p><i class="bi bi-envelope-fill"></i> redfusion@gmail.com</p>
+                    <p><i class="bi bi-telephone-fill"></i> +91 6385368201</p>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="text-center">
+                <p>&copy; 2026 RedFusion. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- External JavaScript -->
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    <!-- Auto-dismiss alerts after 5 seconds -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all alert messages
+            const alerts = document.querySelectorAll('.auto-dismiss-alert');
+            
+            alerts.forEach(function(alert) {
+                // Auto-dismiss after 5 seconds (5000 milliseconds)
+                setTimeout(function() {
+                    // Use Bootstrap's alert close method
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

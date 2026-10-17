@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donation Completed - Success{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .success-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 3rem;
+        max-width: 700px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+    
+    .success-icon {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: white;
+        margin-bottom: 2rem;
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    @keyframes scaleIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .donation-details {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: left;
+        margin-top: 2rem;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    
+    .detail-value {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="success-card">
+        <!-- Success Icon -->
+        <div class="success-icon">
+            ✓
+        </div>
+        
+        <!-- Success Message -->
+        <h2 class="fw-bold mb-3" style="color: #28a745;">Donation Completed Successfully!</h2>
+        <p class="text-muted lead">Thank you for saving lives through blood donation</p>
+        
+        <!-- Donation ID -->
+        <div class="alert alert-success my-4">
+            <h5 class="mb-0">
+                <strong>Donation ID:</strong> 
+                <span class="text-danger">{{ donation.donation_id }}</span>
+            </h5>
+        </div>
+        
+        <!-- Donation Details -->
+        <div class="donation-details">
+            <h5 class="fw-bold mb-3" style="color: #2c3e50;">Donation Details</h5>
+            
+            <div class="detail-row">
+                <span class="detail-label">🆔 Donor ID</span>
+                <span class="detail-value">
+                    <span class="badge bg-info">{{ donation.donor.donor_id }}</span>
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">👤 Donor Name</span>
+                <span class="detail-value">{{ donation.donor.full_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">🩸 Blood Group</span>
+                <span class="detail-value">
+                    <span class="badge bg-danger">{{ donation.blood_group }}</span>
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">📅 Donation Date</span>
+                <span class="detail-value">{{ donation.donation_datetime|date:"d M Y, h:i A" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">💉 Units Donated</span>
+                <span class="detail-value">{{ donation.units_donated }} unit(s)</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">🔖 Blood Bag ID</span>
+                <span class="detail-value">{{ donation.blood_bag_id }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">👨‍⚕️ Staff Name</span>
+                <span class="detail-value">{{ donation.staff_name }}</span>
+            </div>
+            
+            {% if donation.staff_id %}
+            <div class="detail-row">
+                <span class="detail-label">🆔 Staff ID</span>
+                <span class="detail-value">{{ donation.staff_id }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="detail-row">
+                <span class="detail-label">✅ Status</span>
+                <span class="detail-value">
+                    <span class="badge bg-success">{{ donation.get_status_display }}</span>
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">🕐 Confirmed At</span>
+                <span class="detail-value">{{ donation.created_at|date:"d M Y, h:i A" }}</span>
+            </div>
+        </div>
+        
+        <!-- Additional Notes -->
+        {% if donation.notes %}
+        <div class="alert alert-info mt-3 text-start">
+            <strong>📝 Notes:</strong><br>
+            {{ donation.notes }}
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{% url 'hospitals:dashboard' %}" class="btn btn-primary btn-lg">
+                🏠 Back to Dashboard
+            </a>
+            <a href="{% url 'hospitals:confirm_donation' %}" class="btn btn-danger btn-lg">
+                ➕ Record Another Donation
+            </a>
+            <a href="{% url 'hospitals:donation_confirmations_list' %}" class="btn btn-outline-secondary btn-lg">
+                📋 View All Donations
+            </a>
+        </div>
+        
+        <!-- Print Option -->
+        <div class="mt-4">
+            <button onclick="window.print()" class="btn btn-outline-dark">
+                🖨️ Print Receipt
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Confetti effect (optional - simple celebration)
+setTimeout(function() {
+    // Add confetti or celebration animation if you want
+}, 500);
+</script>
+{% endblock %}

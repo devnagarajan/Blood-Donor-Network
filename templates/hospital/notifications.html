@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4"><i class="fas fa-bell text-warning"></i> Notifications</h1>
+    
+    {% if notifications %}
+    <div class="list-group shadow">
+        {% for notification in notifications %}
+        <div class="list-group-item {% if not notification.is_read %}list-group-item-warning{% endif %}">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">
+                    {% if not notification.is_read %}<i class="fas fa-circle text-warning" style="font-size: 0.5em;"></i>{% endif %}
+                    {{ notification.title }}
+                </h5>
+                <small>{{ notification.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+            <p class="mb-1">{{ notification.message }}</p>
+            <small class="text-muted">{{ notification.get_notification_type_display }}</small>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No notifications yet.
+    </div>
+    {% endif %}
+    
+    <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

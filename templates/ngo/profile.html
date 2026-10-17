@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}NGO Profile - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">🤝 NGO Profile</h1>
+    
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h4 class="text-success mb-3">NGO Information</h4>
+            <table class="table">
+                <tr>
+                    <th width="30%">NGO Name:</th>
+                    <td>{{ ngo_profile.ngo_name }}</td>
+                </tr>
+                <tr>
+                    <th>NGO Type:</th>
+                    <td>{{ ngo_profile.get_ngo_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>GST Number:</th>
+                    <td>{{ ngo_profile.gst_number }}</td>
+                </tr>
+                <tr>
+                    <th>Verification Status:</th>
+                    <td>
+                        {% if ngo_profile.verification_status == 'pending' %}
+                            <span class="badge bg-warning">Pending Verification</span>
+                        {% elif ngo_profile.verification_status == 'verified' %}
+                            <span class="badge bg-success">Verified ✓</span>
+                        {% elif ngo_profile.verification_status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            
+            <h4 class="text-success mb-3 mt-4">Contact Information</h4>
+            <table class="table">
+                <tr>
+                    <th width="30%">Phone:</th>
+                    <td>{{ ngo_profile.phone_number }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ ngo_profile.email }}</td>
+                </tr>
+                <tr>
+                    <th>Address:</th>
+                    <td>
+                        {{ ngo_profile.address }}<br>
+                        {{ ngo_profile.city }}, {{ ngo_profile.district }}<br>
+                        {{ ngo_profile.state }} - {{ ngo_profile.pincode }}
+                    </td>
+                </tr>
+            </table>
+            
+            <h4 class="text-success mb-3 mt-4">Statistics</h4>
+            <table class="table">
+                <tr>
+                    <th width="30%">Total Requests Handled:</th>
+                    <td>{{ ngo_profile.total_requests_handled }}</td>
+                </tr>
+                <tr>
+                    <th>Completed Requests:</th>
+                    <td>{{ ngo_profile.completed_requests }}</td>
+                </tr>
+                <tr>
+                    <th>Blood Camps Organized:</th>
+                    <td>{{ ngo_profile.total_camps_organized }}</td>
+                </tr>
+            </table>
+            
+            <div class="mt-4">
+                <a href="{% url 'ngos:dashboard' %}" class="btn btn-primary btn-lg">
+                    🏠 Back to Dashboard
+                </a>
+                <a href="{% url 'ngos:edit_profile' %}" class="btn btn-success btn-lg">
+                    ✏️ Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

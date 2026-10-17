@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">🔔 Notifications</h1>
+            <p class="text-muted">Stay updated with blood donation requests and camp alerts</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'donors:dashboard' %}" class="btn btn-primary">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    {% if notifications %}
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">✉️ Your Notifications ({{ notifications.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for notification in notifications %}
+                <div class="list-group-item {% if not notification.is_read %}border-start border-warning border-4{% endif %}" 
+                     style="{% if not notification.is_read %}background-color: #fff3cd;{% endif %} transition: all 0.3s; cursor: pointer;"
+                     onmouseover="this.style.transform='translateX(5px)'" 
+                     onmouseout="this.style.transform='translateX(0)'">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-2">
+                                {% if not notification.is_read %}
+                                    <span class="badge bg-danger me-2">NEW</span>
+                                    ✉️
+                                {% else %}
+                                    📭
+                                {% endif %}
+                                {{ notification.title }}
+                            </h5>
+                            <p class="mb-2">{{ notification.message }}</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">
+                                    🏷️
+                                    {{ notification.get_notification_type_display }}
+                                </small>
+                                <small class="text-muted">
+                                    🕐
+                                    {{ notification.created_at|date:"M d, Y H:i" }}
+                                </small>
+                                <small>
+                                    {% if notification.is_read %}
+                                        <span class="badge bg-success">
+                                            ✅ Read
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            ⚫ Unread
+                                        </span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-5">
+            <div style="font-size: 4rem; line-height: 1; margin-bottom: 1rem;">🔕</div>
+            <h4 class="text-muted">No Notifications Yet</h4>
+            <p class="text-muted mb-0">
+                You'll receive notifications when there are blood donation requests or camp updates.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{% url 'donors:dashboard' %}" class="btn btn-primary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

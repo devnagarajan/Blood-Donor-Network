@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Community Service Through Blood Donation - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-4">
+    <!-- Article Header -->
+    <div class="text-center mb-5">
+        <div class="feature-icon" style="font-size: 4rem; margin-bottom: 1rem;">👥</div>
+        <h1 class="display-4 fw-bold text-danger mb-3">Serve Your Community</h1>
+        <p class="lead text-muted">Help your neighbors, friends, and community in their time of need</p>
+    </div>
+
+    <!-- Article Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">Why Local Donations Matter</h3>
+                <p class="mb-4">Blood donation is one of the most direct ways to serve your community. Your donation stays local and helps people in your own area.</p>
+
+                <div class="alert alert-warning">
+                    <h5 class="fw-bold">⚠️ Important Fact</h5>
+                    <p class="mb-0">Blood cannot be manufactured. It can only come from generous donors like you!</p>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">The Ripple Effect</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">1️⃣ Direct Impact</h6>
+                            <p class="small mb-0">Save up to 3 lives immediately</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">2️⃣ Family Impact</h6>
+                            <p class="small mb-0">Help entire families stay together</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">3️⃣ Community Impact</h6>
+                            <p class="small mb-0">Strengthen community bonds</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">4️⃣ Inspiration</h6>
+                            <p class="small mb-0">Inspire others to donate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">Why Blood Donation is the Ultimate Volunteer Service</h4>
+                <ul class="mb-0">
+                    <li><strong>Quick:</strong> Takes less than an hour</li>
+                    <li><strong>Direct:</strong> Saves lives immediately</li>
+                    <li><strong>Measurable:</strong> Up to 3 lives per donation</li>
+                    <li><strong>Regular:</strong> Donate every 3 months</li>
+                    <li><strong>Free:</strong> Costs nothing, gives everything</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info">
+                <h5 class="fw-bold">💡 Did You Know?</h5>
+                <p class="mb-0">Only 3% of eligible people donate blood. You can be part of this special group!</p>
+            </div>
+
+            <div class="alert alert-success text-center">
+                <h5 class="fw-bold">Ready to Serve Your Community?</h5>
+                <a href="{% url 'donors:register' %}" class="btn btn-success mt-2">Become a Donor Today</a>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mb-4">
+                <a href="{% url 'core:home' %}" class="btn btn-outline-danger btn-lg">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

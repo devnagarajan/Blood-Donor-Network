@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donor Management - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">👥 Donor Management</h1>
+            <p class="text-muted">View and search registered blood donors</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card dashboard-stat-card bg-primary text-white">
+                <div class="card-body py-3 text-center">
+                    <div style="font-size: 2rem; line-height: 1;" class="mb-2">👥</div>
+                    <h3 class="mb-0">{{ total_donors }}</h3>
+                    <small>Total Registered Donors</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card dashboard-stat-card shadow-sm">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; line-height: 1;" class="text-success mb-2">✅</div>
+                    <h3 class="text-success mb-0">{{ available_donors }}</h3>
+                    <small class="text-muted">Available Donors</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card dashboard-stat-card shadow-sm">
+                <div class="card-body text-center">
+                    <div style="font-size: 3rem; line-height: 1;" class="text-info mb-2">📋</div>
+                    <h3 class="text-info mb-0">{{ donors.count }}</h3>
+                    <small class="text-muted">Showing Results</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search & Filter -->
+    <div class="card profile-card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">🔍 Search Donors</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Blood Group</label>
+                    <select name="blood_group" class="form-control">
+                        <option value="">All Blood Groups</option>
+                        <option value="A+" {% if blood_group_filter == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if blood_group_filter == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if blood_group_filter == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if blood_group_filter == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="AB+" {% if blood_group_filter == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if blood_group_filter == 'AB-' %}selected{% endif %}>AB-</option>
+                        <option value="O+" {% if blood_group_filter == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if blood_group_filter == 'O-' %}selected{% endif %}>O-</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">District</label>
+                    <input type="text" name="district" class="form-control" placeholder="Enter district" value="{{ district_filter }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Availability</label>
+                    <select name="is_available" class="form-control">
+                        <option value="">All Donors</option>
+                        <option value="1" {% if is_available_filter == '1' %}selected{% endif %}>Available Only</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100 d-block">
+                        🔍 Search
+                    </button>
+                </div>
+            </form>
+            {% if blood_group_filter or district_filter or is_available_filter %}
+            <div class="mt-3">
+                <a href="{% url 'ngos:donor_management' %}" class="btn btn-sm btn-outline-secondary">
+                    ❌ Clear Filters
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Donors Table -->
+    {% if donors %}
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">👥 Registered Donors ({{ donors.count }})</h5>
+            <div class="btn-group">
+                <a href="{% url 'ngos:export_donors_csv' %}?blood_group={{ blood_group_filter }}&district={{ district_filter }}&is_available={{ is_available_filter }}" 
+                   class="btn btn-light btn-sm">
+                    📊 Export Excel/CSV
+                </a>
+                <a href="{% url 'ngos:export_donors_pdf' %}?blood_group={{ blood_group_filter }}&district={{ district_filter }}&is_available={{ is_available_filter }}" 
+                   class="btn btn-light btn-sm">
+                    📄 Export PDF
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Donor Name</th>
+                            <th>Blood Group</th>
+                            <th>Location</th>
+                            <th>Contact</th>
+                            <th>Age</th>
+                            <th>Profile Status</th>
+                            <th>Availability</th>
+                            <th>Registered</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donor in donors %}
+                        <tr>
+                            <td>
+                                <strong>{{ donor.full_name|default:"N/A" }}</strong>
+                                {% if donor.gender == 'male' %}
+                                    ♂️
+                                {% elif donor.gender == 'female' %}
+                                    ♀️
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger fs-6">{{ donor.blood_group|default:"N/A" }}</span>
+                            </td>
+                            <td>
+                                📍
+                                {{ donor.district|default:"N/A" }}, {{ donor.state|default:"N/A" }}
+                            </td>
+                            <td>
+                                <small>
+                                    📞 {{ donor.phone_number|default:"N/A" }}<br>
+                                    📧 {{ donor.email|default:"N/A" }}
+                                </small>
+                            </td>
+                            <td>{{ donor.age|default:"0" }} yrs</td>
+                            <td>
+                                {% if donor.profile_completed %}
+                                    <span class="badge bg-info">
+                                        ✅ Complete
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">
+                                        ⚠️ Incomplete
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if donor.is_available %}
+                                    <span class="badge bg-success">
+                                        ✅ Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        ❌ Not Available
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ donor.created_at|date:"M d, Y" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'ngos:donor_detail' donor.pk %}" class="btn btn-sm btn-info">
+                                    👁️ View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% elif donors is not None %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-4">
+            <div style="font-size: 3rem; line-height: 1;" class="text-warning mb-3">⚠️</div>
+            <h5>Debug Info</h5>
+            <p class="mb-2">Query returned: {{ donors.count }} donors</p>
+            <p class="mb-0">Total donors in system (is_active=True): {{ total_donors }}</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-5">
+            <div style="font-size: 4rem; line-height: 1;" class="text-muted mb-3">👥</div>
+            <h4 class="text-muted">No Donors Found</h4>
+            <p class="text-muted mb-0">
+                {% if blood_group_filter or district_filter or is_available_filter %}
+                    No donors match your search criteria. Try clearing filters.
+                {% else %}
+                    No donors have registered yet. Donors will appear here once they complete registration.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{% url 'ngos:dashboard' %}" class="btn btn-secondary">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

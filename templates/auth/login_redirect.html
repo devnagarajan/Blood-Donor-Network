@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="text-center mb-5">Login to RedFusion</h1>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-user fa-4x text-danger mb-3"></i>
+                            <h4>Donor Login</h4>
+                            <p>Access your donor profile and view blood requests</p>
+                            <a href="{% url 'donors:login' %}" class="btn btn-danger">
+                                <i class="fas fa-sign-in-alt"></i> Donor Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-hospital fa-4x text-primary mb-3"></i>
+                            <h4>Hospital Login</h4>
+                            <p>Create and manage blood requests for patients</p>
+                            <a href="{% url 'hospitals:login' %}" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Hospital Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-hands-helping fa-4x text-success mb-3"></i>
+                            <h4>NGO Login</h4>
+                            <p>Coordinate blood requests and organize camps</p>
+                            <a href="{% url 'ngos:login' %}" class="btn btn-success">
+                                <i class="fas fa-sign-in-alt"></i> NGO Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">Don't have an account?</p>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'donors:register' %}" class="btn btn-outline-danger">Register as Donor</a>
+                    <a href="{% url 'hospitals:register' %}" class="btn btn-outline-primary">Register Hospital</a>
+                    <a href="{% url 'ngos:register' %}" class="btn btn-outline-success">Register NGO</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

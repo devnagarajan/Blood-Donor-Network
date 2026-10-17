@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Donor Details - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">👤 Donor Details</h1>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <h4>{{ donor.full_name }}</h4>
+            <p><span class="badge bg-danger fs-5">{{ donor.blood_group }}</span></p>
+            <hr>
+            <p><strong>Location:</strong> {{ donor.city }}, {{ donor.district }}, {{ donor.state }}</p>
+            <p><strong>Phone:</strong> {{ donor.phone_number }}</p>
+            <p><strong>Email:</strong> {{ donor.email }}</p>
+            <p><strong>Last Donation:</strong> 
+                {% if donor.last_donation_date %}
+                    {{ donor.last_donation_date|date:"F d, Y" }}
+                {% else %}
+                    Never donated
+                {% endif %}
+            </p>
+            <p><strong>Total Donations:</strong> {{ donor.total_donations }}</p>
+            <p><strong>Availability:</strong> 
+                {% if donor.is_available %}
+                    <span class="badge bg-success">Available</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Available</span>
+                {% endif %}
+            </p>
+            
+            <a href="{% url 'ngos:donor_management' %}" class="btn btn-secondary">
+                🏠 Back to List
+            </a>
+            <a href="{% url 'ngos:download_donor_receipt' donor.pk %}" class="btn btn-danger">
+                📄 Download Donor Details PDF
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

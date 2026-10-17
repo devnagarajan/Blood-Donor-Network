@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - RedFusion{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Blood Donation Banner -->
+<div class="hero-section" style="background-image: url('/static/images/hero-banner.png');">
+    <div class="container text-center animate-fade-in">
+        <h1 class="display-3 fw-bold mb-4" style="font-family: 'Georgia', 'Times New Roman', serif; letter-spacing: -1px; line-height: 1.2;">
+            Save Lives Through Blood Donation
+        </h1>
+        <p class="lead mb-5" style="font-size: 1.3rem; max-width: 800px; margin: 0 auto;">
+            Join our network of donors, hospitals, and NGOs working together to ensure blood availability for those in need.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'donors:register' %}" class="btn btn-light btn-lg px-5 py-3" style="font-size: 1.1rem; border-radius: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                <i class="bi bi-person-plus-fill me-2"></i> Become a Donor
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Why Donate Blood - Enhanced -->
+<section class="container my-5 py-5">
+    <h2 class="text-center display-5 fw-bold mb-5" style="color: #2c3e50;">Why Donate Blood?</h2>
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card h-100 text-center p-4 shadow-sm border-0" style="transition: transform 0.3s;">
+                <div class="feature-icon mb-3" style="font-size: 3rem; color: #dc3545;">❤️</div>
+                <h5 class="fw-bold mb-3">Save Lives</h5>
+                <p class="text-muted mb-3">One donation can save up to 3 lives</p>
+                <a href="{% url 'core:article_save_lives' %}" class="btn btn-outline-danger btn-sm mt-auto">
+                    Learn More →
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card h-100 text-center p-4 shadow-sm border-0" style="transition: transform 0.3s;">
+                <div class="feature-icon mb-3" style="font-size: 3rem; color: #dc3545;">💓</div>
+                <h5 class="fw-bold mb-3">Health Benefits</h5>
+                <p class="text-muted mb-3">Regular donation keeps you healthy</p>
+                <a href="{% url 'core:article_health_benefits' %}" class="btn btn-outline-danger btn-sm mt-auto">
+                    Learn More →
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card h-100 text-center p-4 shadow-sm border-0" style="transition: transform 0.3s;">
+                <div class="feature-icon mb-3" style="font-size: 3rem; color: #dc3545;">👥</div>
+                <h5 class="fw-bold mb-3">Community Service</h5>
+                <p class="text-muted mb-3">Help your community in need</p>
+                <a href="{% url 'core:article_community_service' %}" class="btn btn-outline-danger btn-sm mt-auto">
+                    Learn More →
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blood Groups - Enhanced -->
+<section class="bg-light py-5">
+    <div class="container my-5">
+        <h2 class="text-center display-5 fw-bold mb-5" style="color: #2c3e50;">Available Donors by Blood Group</h2>
+        <div class="row g-4 justify-content-center">
+            {% for bg in blood_group_stats %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card text-center p-4 border-0 shadow-sm h-100" style="border-radius: 15px; transition: transform 0.3s;">
+                    <div class="blood-badge mx-auto mb-3" style="font-size: 2rem; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; border-radius: 50%; font-weight: bold;">{{ bg.blood_group }}</div>
+                    <h3 class="fw-bold text-danger mb-2">{{ bg.count }}</h3>
+                    <p class="text-muted mb-0 small">Donors Available</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Blood Camps - Enhanced -->
+{% if upcoming_camps %}
+<section class="container my-5 py-5">
+    <h2 class="text-center display-5 fw-bold mb-5" style="color: #2c3e50;">Upcoming Blood Donation Camps</h2>
+    <div class="row g-4">
+        {% for camp in upcoming_camps %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <span class="badge bg-success px-3 py-2" style="border-radius: 20px;">Upcoming</span>
+                    </div>
+                    <h5 class="card-title fw-bold mb-3" style="color: #2c3e50;">{{ camp.camp_name }}</h5>
+                    <div class="camp-details">
+                        <p class="mb-2">
+                            <span style="color: #dc3545; font-weight: bold;">📅</span> 
+                            <span class="ms-2">{{ camp.camp_date|date:"F d, Y" }}</span>
+                        </p>
+                        <p class="mb-2">
+                            <span style="color: #dc3545; font-weight: bold;">🕐</span> 
+                            <span class="ms-2">{{ camp.start_time }} - {{ camp.end_time }}</span>
+                        </p>
+                        <p class="mb-3">
+                            <span style="color: #dc3545; font-weight: bold;">📍</span> 
+                            <span class="ms-2">{{ camp.district }}, {{ camp.state }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 p-4 pt-0">
+                    <a href="{% url 'camps:camp_detail' camp.id %}" class="btn btn-danger w-100" style="border-radius: 10px; font-weight: 600;">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-5">
+        <a href="{% url 'core:blood_camps_public' %}" class="btn btn-outline-danger btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600;">
+            View All Camps →
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<!-- Final CTA - Enhanced -->
+<section class="bg-light py-5 my-5">
+    <div class="container text-center py-5">
+        <h2 class="display-4 fw-bold mb-4" style="color: #2c3e50;">Ready to Make a Difference?</h2>
+        <p class="lead mb-5" style="font-size: 1.2rem; color: #6c757d; max-width: 700px; margin: 0 auto;">Join thousands of donors who are saving lives every day</p>
+        <a href="{% url 'donors:register' %}" class="btn btn-danger btn-lg px-5 py-4 shadow" style="font-size: 1.2rem; border-radius: 50px; font-weight: 600;">
+            Register as a Donor Today →
+        </a>
+    </div>
+</section>
+{% endblock %}

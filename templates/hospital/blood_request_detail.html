@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blood Request Details - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2"><i class="fas fa-file-medical text-danger"></i> Blood Request Details</h1>
+            <p class="text-muted">View and manage your blood donation request</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <h3 class="text-danger mb-0">{{ blood_request.request_id }}</h3>
+            <small class="text-muted">Request ID</small>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Blood Requirements Card -->
+            <div class="card profile-card shadow mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-tint"></i> Blood Requirements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-tint text-danger"></i> Blood Group:</strong></p>
+                            <span class="badge bg-danger fs-5">{{ blood_request.blood_group }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-flask text-primary"></i> Units Required:</strong></p>
+                            <h4 class="text-primary mb-0">{{ blood_request.units_required }} units</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-check-circle text-success"></i> Units Fulfilled:</strong></p>
+                            <h4 class="text-success mb-0">{{ blood_request.units_fulfilled }} units</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-hourglass-half text-warning"></i> Remaining:</strong></p>
+                            <h4 class="text-warning mb-0">{{ blood_request.remaining_units }} units</h4>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <p class="mb-1"><strong><i class="fas fa-exclamation-triangle text-danger"></i> Urgency:</strong></p>
+                            {% if blood_request.urgency == 'emergency' %}
+                                <span class="badge status-emergency fs-6">🚨 EMERGENCY</span>
+                            {% elif blood_request.urgency == 'urgent' %}
+                                <span class="badge bg-warning text-dark fs-6">⚠️ URGENT</span>
+                            {% else %}
+                                <span class="badge bg-info fs-6">ℹ️ Normal</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <p class="mb-1"><strong><i class="fas fa-calendar text-primary"></i> Required By:</strong></p>
+                            <span class="fs-6">{{ blood_request.required_date|date:"F d, Y" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-2">
+                        <div class="col-md-12">
+                            <p class="mb-1"><strong><i class="fas fa-tag text-info"></i> Status:</strong></p>
+                            {% if blood_request.status == 'pending' %}
+                                <span class="badge status-pending fs-6">Pending</span>
+                            {% elif blood_request.status == 'accepted' %}
+                                <span class="badge bg-info fs-6">Accepted</span>
+                            {% elif blood_request.status == 'partially_fulfilled' %}
+                                <span class="badge bg-warning fs-6">Partially Fulfilled</span>
+                            {% elif blood_request.status == 'fulfilled' %}
+                                <span class="badge bg-success fs-6">✓ Fulfilled</span>
+                            {% elif blood_request.status == 'cancelled' %}
+                                <span class="badge bg-danger fs-6">Cancelled</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">{{ blood_request.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timeline Card -->
+            <div class="card profile-card shadow mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong><i class="fas fa-plus-circle text-success"></i> Created:</strong> {{ blood_request.created_at|date:"F d, Y H:i" }}</p>
+                    {% if blood_request.accepted_at %}
+                    <p><strong><i class="fas fa-check-circle text-info"></i> Accepted:</strong> {{ blood_request.accepted_at|date:"F d, Y H:i" }}</p>
+                    {% endif %}
+                    {% if blood_request.fulfilled_at %}
+                    <p class="mb-0"><strong><i class="fas fa-check-double text-success"></i> Fulfilled:</strong> {{ blood_request.fulfilled_at|date:"F d, Y H:i" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Actions Card -->
+            <div class="card quick-links-card shadow mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    {% if blood_request.status in 'pending,accepted' %}
+                        <form method="post" action="{% url 'hospitals:cancel_blood_request' blood_request.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger w-100 mb-3 pulse-button" onclick="return confirm('Are you sure you want to cancel this request?')">
+                                <i class="fas fa-times-circle"></i> Cancel Request
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <a href="{% url 'hospitals:blood_requests_list' %}" class="btn btn-secondary w-100 mb-2">
+                        <i class="fas fa-list"></i> Back to List
+                    </a>
+                    
+                    <a href="{% url 'hospitals:dashboard' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-home"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Matched Donors Card -->
+            {% if matched_donors %}
+            <div class="card dashboard-stat-card bg-success text-white shadow mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-2"></i>
+                    <h2 class="mb-0">{{ matched_donors.count }}</h2>
+                    <p class="mb-0">Matched Donors</p>
+                    <hr style="border-color: rgba(255,255,255,0.3);">
+                    <small>
+                        Donors matching your blood group and location have been notified via email. 
+                        The assigned NGO is coordinating with them.
+                    </small>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Assigned NGO Card -->
+            {% if blood_request.assigned_ngo %}
+            <div class="card profile-card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-hands-helping"></i> Assigned NGO</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="text-success">{{ blood_request.assigned_ngo.ngo_name }}</h6>
+                    {% if blood_request.assigned_ngo.contact_person_name %}
+                    <p class="mb-1"><i class="fas fa-user text-primary"></i> <small>{{ blood_request.assigned_ngo.contact_person_name }}</small></p>
+                    {% endif %}
+                    <p class="mb-0"><i class="fas fa-phone text-success"></i> <a href="tel:{{ blood_request.assigned_ngo.phone_number }}">{{ blood_request.assigned_ngo.phone_number }}</a></p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

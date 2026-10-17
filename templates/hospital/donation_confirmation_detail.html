@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donation Details - {{ confirmation.donation_id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="fw-bold mb-4" style="color: #2c3e50;">Donation Details</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">{{ confirmation.donation_id }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Donor Name:</strong><br>
+                            {{ confirmation.donor.full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Blood Group:</strong><br>
+                            <span class="badge bg-danger">{{ confirmation.blood_group }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Donation Date & Time:</strong><br>
+                            {{ confirmation.donation_datetime|date:"d M Y, h:i A" }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Units Donated:</strong><br>
+                            {{ confirmation.units_donated }} unit(s)
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Blood Bag ID:</strong><br>
+                            <code>{{ confirmation.blood_bag_id }}</code>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong><br>
+                            {% if confirmation.status == 'completed' %}
+                                <span class="badge bg-success">✓ Completed</span>
+                            {% elif confirmation.status == 'verified' %}
+                                <span class="badge bg-info">✓ Verified</span>
+                            {% elif confirmation.status == 'pending_otp' %}
+                                <span class="badge bg-warning">⏳ Pending OTP</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ confirmation.get_status_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Staff Name:</strong><br>
+                            {{ confirmation.staff_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Staff ID:</strong><br>
+                            {{ confirmation.staff_id|default:"N/A" }}
+                        </div>
+                    </div>
+                    
+                    {% if confirmation.notes %}
+                    <div class="mb-3">
+                        <strong>Notes:</strong><br>
+                        <p class="text-muted">{{ confirmation.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Donor Information</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ confirmation.donor.full_name }}</p>
+                    <p><strong>Phone:</strong> {{ confirmation.donor.phone_number }}</p>
+                    <p><strong>Email:</strong> {{ confirmation.donor.email }}</p>
+                    <p><strong>Blood Group:</strong> <span class="badge bg-danger">{{ confirmation.donor.blood_group }}</span></p>
+                    <p><strong>Total Donations:</strong> {{ confirmation.donor.total_donations }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Back Buttons -->
+    <div class="mt-4">
+        <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+        <a href="{% url 'hospitals:donation_confirmations_list' %}" class="btn btn-outline-secondary btn-lg">
+            📋 View All Confirmations
+        </a>
+        <a href="{% url 'hospitals:download_donation_receipt' confirmation.id %}" class="btn btn-success btn-lg">
+            📄 Download Receipt PDF
+        </a>
+    </div>
+</div>
+{% endblock %}

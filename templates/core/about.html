@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="mb-4">About RedFusion</h1>
+            
+            <div class="card mb-4 border-0">
+                <div class="card-body">
+                    <h3>Our Mission</h3>
+                    <p class="lead">
+                        To create a seamless connection between blood donors, hospitals, and NGOs to ensure 
+                        that no one suffers due to lack of blood availability.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4 border-0">
+                <div class="card-body">
+                    <h3>Our Vision</h3>
+                    <p>
+                        A world where every patient in need of blood transfusion receives it on time, 
+                        and where blood donation becomes a regular part of social responsibility.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4 border-0">
+                <div class="card-body">
+                    <h3>How the Platform Works</h3>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">👥</div>
+                                <h4>Donors</h4>
+                                <p>Register with your blood group and location. Receive notifications when your blood type is needed nearby.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">🏥</div>
+                                <h4>Hospitals</h4>
+                                <p>Create blood requests with patient details. Our system automatically finds matching donors and notifies them.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <div style="font-size: 4rem; margin-bottom: 1rem;">🤝</div>
+                                <h4>NGOs</h4>
+                                <p>Coordinate between donors and hospitals. Organize blood donation camps and manage community outreach.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4 border-0">
+                <div class="card-body">
+                    <h3>Why Blood Donation Matters</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span style="color: #28a745; font-weight: bold; margin-right: 0.5rem;">✓</span> Every 2 seconds someone needs blood</li>
+                        <li class="list-group-item"><span style="color: #28a745; font-weight: bold; margin-right: 0.5rem;">✓</span> One donation can save up to 3 lives</li>
+                        <li class="list-group-item"><span style="color: #28a745; font-weight: bold; margin-right: 0.5rem;">✓</span> Blood cannot be manufactured - it can only come from donors</li>
+                        <li class="list-group-item"><span style="color: #28a745; font-weight: bold; margin-right: 0.5rem;">✓</span> Only 10% of eligible people donate blood</li>
+                        <li class="list-group-item"><span style="color: #28a745; font-weight: bold; margin-right: 0.5rem;">✓</span> Regular donation helps maintain healthy iron levels</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <div class="card mb-4 bg-light border-0">
+                <div class="card-body text-center">
+                    <h3>Ready to Make a Difference?</h3>
+                    <p class="lead">Join our network today and help save lives.</p>
+                    <a href="{% url 'donors:register' %}" class="btn btn-danger btn-lg me-2">
+                        <span style="margin-right: 0.5rem;">➕</span> Register as Donor
+                    </a>
+                    <a href="{% url 'core:contact' %}" class="btn btn-outline-danger btn-lg">
+                        <span style="margin-right: 0.5rem;">✉️</span> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

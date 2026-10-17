@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Blood Donation Camps - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Upcoming Blood Donation Camps</h1>
+    
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="state" class="form-control" placeholder="State" value="{{ request.GET.state }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="district" class="form-control" placeholder="District" value="{{ request.GET.district }}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-danger w-100">
+                        🔍 Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Camps List -->
+    {% if camps %}
+    <div class="row">
+        {% for camp in camps %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                {% if camp.banner_image %}
+                <img src="{{ camp.banner_image.url }}" class="card-img-top" alt="{{ camp.camp_name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ camp.camp_name }}</h5>
+                    <p class="card-text">{{ camp.description|truncatewords:30 }}</p>
+                    
+                    <div class="mb-2">
+                        📅 
+                        <strong>{{ camp.camp_date|date:"F d, Y" }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        🕐 
+                        {{ camp.start_time }} - {{ camp.end_time }}
+                    </div>
+                    <div class="mb-2">
+                        📍 
+                        {{ camp.venue_name }}, {{ camp.district }}, {{ camp.state }}
+                    </div>
+                    <div class="mb-2">
+                        👥 
+                        {{ camp.registered_count }} / {{ camp.total_capacity }} registered
+                    </div>
+                    <div class="mb-2">
+                        📞 
+                        {{ camp.contact_number }}
+                    </div>
+                    
+                    {% if camp.can_register %}
+                    <span class="badge bg-success">Registration Open</span>
+                    {% elif camp.is_full %}
+                    <span class="badge bg-danger">Camp Full</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Registration Closed</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'camps:camp_detail' camp.id %}" class="btn btn-danger">View Details & Register</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <h2 class="mb-3">ℹ️</h2>
+        <h4>No upcoming blood camps found</h4>
+        <p>Please check back later or adjust your search filters.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

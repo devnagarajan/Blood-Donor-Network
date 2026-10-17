@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}My Camp Registrations - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-3">📋 My Camp Registrations</h1>
+            <p class="text-muted">View all your blood camp registrations</p>
+        </div>
+    </div>
+
+    {% if registrations %}
+        <div class="row">
+            {% for registration in registrations %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header 
+                            {% if registration.camp.status == 'upcoming' %}bg-info{% elif registration.camp.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %} 
+                            text-white">
+                            <h5 class="mb-0">{{ registration.camp.camp_name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                📅 
+                                <strong>Date:</strong> {{ registration.camp.camp_date|date:"d M, Y" }}
+                            </p>
+                            <p class="mb-2">
+                                🕐 
+                                <strong>Time:</strong> {{ registration.camp.start_time|time:"h:i A" }} - {{ registration.camp.end_time|time:"h:i A" }}
+                            </p>
+                            <p class="mb-2">
+                                📍 
+                                <strong>Venue:</strong> {{ registration.camp.venue_name }}<br>
+                                <small class="text-muted">{{ registration.camp.district }}, {{ registration.camp.state }}</small>
+                            </p>
+                            <p class="mb-2">
+                                🏢 
+                                <strong>Organized by:</strong> {{ registration.camp.organized_by.ngo_name }}
+                            </p>
+                            <p class="mb-2">
+                                ✅ 
+                                <strong>Registered on:</strong> {{ registration.registration_date|date:"d M, Y" }}
+                            </p>
+                            <p class="mb-2">
+                                🏷️ 
+                                <strong>Status:</strong>
+                                {% if registration.status == 'registered' %}
+                                    <span class="badge bg-primary">Registered</span>
+                                {% elif registration.status == 'confirmed' %}
+                                    <span class="badge bg-info">Confirmed</span>
+                                {% elif registration.status == 'attended' %}
+                                    <span class="badge bg-success">Attended</span>
+                                {% elif registration.status == 'donated' %}
+                                    <span class="badge bg-success">Donated</span>
+                                {% elif registration.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% elif registration.status == 'no_show' %}
+                                    <span class="badge bg-warning">No Show</span>
+                                {% endif %}
+                            </p>
+                            
+                            {% if registration.status == 'donated' %}
+                                <div class="alert alert-success mt-3 mb-0">
+                                    ✅ You donated at this camp. Thank you for saving lives!
+                                </div>
+                            {% elif registration.status == 'attended' %}
+                                <div class="alert alert-info mt-3 mb-0">
+                                    ✅ You attended this camp. Thank you for your participation!
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'camps:camp_detail' registration.camp.pk %}" class="btn btn-primary btn-sm">
+                                ℹ️ View Camp Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            ℹ️ You haven't registered for any blood camps yet.
+            <a href="{% url 'core:blood_camps_public' %}" class="alert-link">Browse upcoming camps</a>
+        </div>
+    {% endif %}
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <a href="{% url 'donors:dashboard' %}" class="btn btn-secondary me-2">
+                ← Back to Dashboard
+            </a>
+            <a href="{% url 'core:blood_camps_public' %}" class="btn btn-primary">
+                📅 Browse All Camps
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

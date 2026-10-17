@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Save Lives - Why Donate Blood - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-4">
+    <!-- Article Header -->
+    <div class="text-center mb-5">
+        <div class="feature-icon" style="font-size: 4rem; margin-bottom: 1rem;">❤️</div>
+        <h1 class="display-4 fw-bold text-danger mb-3">Save Lives Through Blood Donation</h1>
+        <p class="lead text-muted">One donation can save up to three lives</p>
+    </div>
+
+    <!-- Article Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">Why Your Donation Matters</h3>
+                <p class="mb-4">Every blood donation can save up to three lives. When you donate blood, you're giving hope and life to someone in desperate need. Blood is essential for emergencies, surgeries, cancer treatments, and chronic illnesses.</p>
+
+                <div class="alert alert-info">
+                    <h5 class="fw-bold">💡 Did You Know?</h5>
+                    <p class="mb-0">Someone needs blood every 2 seconds. Your donation could be the difference between life and death.</p>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">Who Benefits From Your Donation?</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">🚑 Accident Victims</h6>
+                            <p class="small mb-0">Trauma patients often require multiple blood transfusions immediately.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">🏥 Surgery Patients</h6>
+                            <p class="small mb-0">Complex surgeries require blood to be available during operations.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">💉 Cancer Patients</h6>
+                            <p class="small mb-0">Chemotherapy patients often need regular blood transfusions.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">🩺 Chronic Illness</h6>
+                            <p class="small mb-0">People with blood disorders need regular transfusions to stay healthy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">Impact of Your Single Donation</h4>
+                <p class="mb-3">One blood donation (450ml) can be separated into:</p>
+                <ul class="mb-0">
+                    <li><strong>Red Blood Cells:</strong> For trauma victims and surgical patients</li>
+                    <li><strong>Platelets:</strong> For cancer patients and clotting disorders</li>
+                    <li><strong>Plasma:</strong> For burn victims and liver disease patients</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-success text-center">
+                <h5 class="fw-bold">Ready to Save Lives?</h5>
+                <p>Join thousands of donors making a difference every day.</p>
+                <a href="{% url 'donors:register' %}" class="btn btn-success mt-2">Become a Donor Today</a>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mb-4">
+                <a href="{% url 'core:home' %}" class="btn btn-outline-danger btn-lg">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #dc3545;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .details {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+        }
+        .detail-row {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+        .urgent {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>{% if blood_request.is_urgent %}🚨 EMERGENCY {% endif %}Blood Request Received</h2>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ ngo.ngo_name }},</p>
+            
+            <p>A new blood request has been assigned to your organization. Please review the details below and coordinate with matching donors.</p>
+            
+            <div class="details">
+                <h3>Request Details</h3>
+                <div class="detail-row">
+                    <span class="label">Request ID:</span>
+                    <strong>{{ blood_request.request_id }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Blood Group:</span>
+                    <strong style="color: #dc3545; font-size: 18px;">{{ blood_request.blood_group }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Units Required:</span>
+                    {{ blood_request.units_required }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Urgency:</span>
+                    {% if blood_request.is_urgent %}
+                        <span class="urgent">{{ blood_request.get_urgency_display|upper }}</span>
+                    {% else %}
+                        {{ blood_request.get_urgency_display }}
+                    {% endif %}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Required By:</span>
+                    {{ blood_request.required_date|date:"F d, Y" }}
+                </div>
+            </div>
+            
+            <div class="details">
+                <h3>Hospital Information</h3>
+                <div class="detail-row">
+                    <span class="label">Hospital Name:</span>
+                    {{ blood_request.hospital.hospital_name }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Registration No:</span>
+                    {{ blood_request.hospital.registration_number }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">GST Number:</span>
+                    {{ blood_request.hospital.gst_number }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Address:</span>
+                    {{ blood_request.hospital.address }}, {{ blood_request.hospital.district }}, {{ blood_request.hospital.state }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Contact Person:</span>
+                    {{ blood_request.contact_person }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Contact Number:</span>
+                    <strong>{{ blood_request.contact_number }}</strong>
+                </div>
+            </div>
+            
+            <div class="details">
+                <h3>Patient Information</h3>
+                <div class="detail-row">
+                    <span class="label">Patient Name:</span>
+                    {{ blood_request.patient_name }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Age:</span>
+                    {{ blood_request.patient_age }} years
+                </div>
+                <div class="detail-row">
+                    <span class="label">Gender:</span>
+                    {{ blood_request.get_patient_gender_display }}
+                </div>
+                <div class="detail-row">
+                    <span class="label">Medical Requirement:</span>
+                    {{ blood_request.reason }}
+                </div>
+            </div>
+            
+            {% if blood_request.additional_notes %}
+            <div class="details">
+                <h3>Additional Notes</h3>
+                <p>{{ blood_request.additional_notes }}</p>
+            </div>
+            {% endif %}
+            
+            <p style="margin-top: 20px;">
+                <strong>Action Required:</strong><br>
+                Please log in to the RedFusion portal to:
+            </p>
+            <ul>
+                <li>Accept the blood request</li>
+                <li>View matched donors</li>
+                <li>Coordinate with donors</li>
+                <li>Update request status</li>
+            </ul>
+            
+            <p>
+                <a href="#" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                    Login to Portal
+                </a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated email from RedFusion.<br>
+            Please do not reply to this email.</p>
+            <p>&copy; 2026 RedFusion. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

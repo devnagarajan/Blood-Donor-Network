@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Upcoming Blood Camps - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-3">📅 Upcoming Blood Camps</h1>
+            <p class="text-muted">Register for upcoming blood donation camps in your area</p>
+        </div>
+    </div>
+
+    {% if camps %}
+        <div class="row">
+            {% for camp in camps %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">{{ camp.name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                🏢 
+                                <strong>Organized by:</strong> {{ camp.ngo.organization_name }}
+                            </p>
+                            <p class="mb-2">
+                                📅 
+                                <strong>Date:</strong> {{ camp.camp_date|date:"d M, Y" }}
+                            </p>
+                            <p class="mb-2">
+                                🕐 
+                                <strong>Time:</strong> {{ camp.start_time|time:"h:i A" }} - {{ camp.end_time|time:"h:i A" }}
+                            </p>
+                            <p class="mb-2">
+                                📍 
+                                <strong>Location:</strong> {{ camp.venue }}
+                            </p>
+                            <p class="mb-2">
+                                🏙️ 
+                                <strong>District:</strong> {{ camp.district }}, {{ camp.state }}
+                            </p>
+                            <p class="mb-2">
+                                👥 
+                                <strong>Registered:</strong> {{ camp.registered_count }} / {{ camp.capacity }}
+                            </p>
+                            
+                            {% if camp.is_full %}
+                                <span class="badge bg-secondary">Camp Full</span>
+                            {% else %}
+                                <span class="badge bg-success">Open for Registration</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'camps:camp_detail' camp.pk %}" class="btn btn-primary btn-sm w-100">
+                                ℹ️ View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            ℹ️ No upcoming blood camps at the moment. Please check back later.
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated and user.is_donor %}
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <a href="{% url 'donors:dashboard' %}" class="btn btn-secondary btn-lg me-2">
+                    🏠 Back to Dashboard
+                </a>
+                <a href="{% url 'camps:my_registrations' %}" class="btn btn-outline-primary btn-lg">
+                    📋 My Camp Registrations
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

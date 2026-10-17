@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blood Requests - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">🩺 Blood Requests Received</h1>
+            <p class="text-muted">Blood requests matching your profile and availability</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card dashboard-stat-card bg-danger text-white">
+                <div class="card-body py-3 text-center">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💓</div>
+                    <h3 class="mb-0">{{ requests.count|default:0 }}</h3>
+                    <small>Total Requests</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if requests %}
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">📋 Blood Requests ({{ requests.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Hospital</th>
+                            <th>Blood Group</th>
+                            <th>Units Required</th>
+                            <th>Urgency</th>
+                            <th>Required Date</th>
+                            <th>Status</th>
+                            <th>Contact</th>
+                            <th>Notified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in requests %}
+                        <tr>
+                            <td><strong>{{ match.blood_request.request_id }}</strong></td>
+                            <td>
+                                🏥 {{ match.blood_request.hospital.hospital_name }}
+                            </td>
+                            <td><span class="badge bg-danger fs-6">{{ match.blood_request.blood_group }}</span></td>
+                            <td><strong>{{ match.blood_request.units_required }}</strong> units</td>
+                            <td>
+                                {% if match.blood_request.urgency == 'emergency' %}
+                                    <span class="badge status-emergency">
+                                        ⚠️ EMERGENCY
+                                    </span>
+                                {% elif match.blood_request.urgency == 'urgent' %}
+                                    <span class="badge bg-warning text-dark">
+                                        🕐 URGENT
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-info">
+                                        ℹ️ Normal
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                📅 {{ match.blood_request.required_date|date:"M d, Y" }}
+                            </td>
+                            <td>
+                                {% if match.blood_request.status == 'pending' %}
+                                    <span class="badge status-pending">Pending</span>
+                                {% elif match.blood_request.status == 'accepted' %}
+                                    <span class="badge bg-info">Accepted</span>
+                                {% elif match.blood_request.status == 'partially_fulfilled' %}
+                                    <span class="badge bg-warning">Partially Fulfilled</span>
+                                {% elif match.blood_request.status == 'fulfilled' %}
+                                    <span class="badge bg-success">Fulfilled</span>
+                                {% elif match.blood_request.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ match.blood_request.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    👤 {{ match.blood_request.contact_person }}<br>
+                                    📞 <a href="tel:{{ match.blood_request.contact_number }}">{{ match.blood_request.contact_number }}</a>
+                                </small>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ match.notified_at|date:"M d, Y" }}</small>
+                            </td>
+                        </tr>
+                        <tr class="bg-light">
+                            <td colspan="9" class="py-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small>
+                                            <strong>📍 Location:</strong><br>
+                                            {{ match.blood_request.hospital.district }}, {{ match.blood_request.hospital.state }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small>
+                                            <strong>🤕 Patient:</strong><br>
+                                            {{ match.blood_request.patient_name }}, {{ match.blood_request.patient_age }} years
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small>
+                                            <strong>📝 Reason:</strong><br>
+                                            {{ match.blood_request.reason }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-5">
+            <div style="font-size: 4rem; line-height: 1; margin-bottom: 1rem;">📭</div>
+            <h4 class="text-muted">No Blood Requests Yet</h4>
+            <p class="text-muted mb-0">
+                You will be notified when your blood group is needed in your area.
+            </p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{% url 'donors:dashboard' %}" class="btn btn-primary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

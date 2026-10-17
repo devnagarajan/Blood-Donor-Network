@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Hospital Profile - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="mb-2"><i class="fas fa-edit text-success"></i> Edit Hospital Profile</h1>
+            <p class="text-muted">Update your hospital information</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-hospital"></i> Hospital Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Hospital Basic Details -->
+                        <h5 class="text-success mb-3"><i class="fas fa-building"></i> Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hospital Name *</label>
+                                {{ form.hospital_name }}
+                                {% if form.hospital_name.errors %}
+                                    <div class="text-danger">{{ form.hospital_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hospital Type *</label>
+                                {{ form.hospital_type }}
+                                {% if form.hospital_type.errors %}
+                                    <div class="text-danger">{{ form.hospital_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number *</label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger">{{ form.phone_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- GST Information -->
+                        <h5 class="text-success mb-3 mt-4"><i class="fas fa-file-invoice"></i> GST Information</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">GST Number *</label>
+                                {{ form.gst_number }}
+                                <small class="text-muted">Example: 22AAAAA0000A1Z5</small>
+                                {% if form.gst_number.errors %}
+                                    <div class="text-danger">{{ form.gst_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">GST Document</label>
+                                {{ form.gst_document }}
+                                {% if hospital_profile.gst_document %}
+                                    <small class="text-success d-block">
+                                        <i class="fas fa-check-circle"></i> Current: 
+                                        <a href="{{ hospital_profile.gst_document.url }}" target="_blank">View Document</a>
+                                    </small>
+                                {% endif %}
+                                {% if form.gst_document.errors %}
+                                    <div class="text-danger">{{ form.gst_document.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Address -->
+                        <h5 class="text-success mb-3 mt-4"><i class="fas fa-map-marker-alt"></i> Address Details</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Address *</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger">{{ form.address.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">City *</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}
+                                    <div class="text-danger">{{ form.city.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">District *</label>
+                                {{ form.district }}
+                                {% if form.district.errors %}
+                                    <div class="text-danger">{{ form.district.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">State *</label>
+                                {{ form.state }}
+                                {% if form.state.errors %}
+                                    <div class="text-danger">{{ form.state.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pincode *</label>
+                                {{ form.pincode }}
+                                {% if form.pincode.errors %}
+                                    <div class="text-danger">{{ form.pincode.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Person (Optional) -->
+                        <h5 class="text-success mb-3 mt-4"><i class="fas fa-user"></i> Contact Person (Optional)</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Contact Person Name</label>
+                                {{ form.contact_person_name }}
+                                {% if form.contact_person_name.errors %}
+                                    <div class="text-danger">{{ form.contact_person_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Designation</label>
+                                {{ form.contact_person_designation }}
+                                {% if form.contact_person_designation.errors %}
+                                    <div class="text-danger">{{ form.contact_person_designation.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Emergency Contact</label>
+                                {{ form.emergency_contact_number }}
+                                {% if form.emergency_contact_number.errors %}
+                                    <div class="text-danger">{{ form.emergency_contact_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Website -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Website (Optional)</label>
+                                {{ form.website }}
+                                {% if form.website.errors %}
+                                    <div class="text-danger">{{ form.website.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Registration Document (Optional)</label>
+                                {{ form.registration_document }}
+                                {% if hospital_profile.registration_document %}
+                                    <small class="text-success d-block">
+                                        <i class="fas fa-check-circle"></i> Current: 
+                                        <a href="{{ hospital_profile.registration_document.url }}" target="_blank">View Document</a>
+                                    </small>
+                                {% endif %}
+                                {% if form.registration_document.errors %}
+                                    <div class="text-danger">{{ form.registration_document.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'hospitals:profile' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <a href="{% url 'hospitals:dashboard' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-home"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Health Benefits of Blood Donation - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5 py-4">
+    <!-- Article Header -->
+    <div class="text-center mb-5">
+        <div class="feature-icon" style="font-size: 4rem; margin-bottom: 1rem;">💓</div>
+        <h1 class="display-4 fw-bold text-danger mb-3">Health Benefits of Blood Donation</h1>
+        <p class="lead text-muted">Regular donation keeps you healthy and provides free health screening</p>
+    </div>
+
+    <!-- Article Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-5">
+                <h3 class="fw-bold mb-4">Health Benefits for Donors</h3>
+                <p class="mb-4">While helping save lives, blood donation also offers significant health benefits to you as the donor!</p>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">❤️ Reduces Heart Disease Risk</h6>
+                            <p class="small mb-0">Regular donors have 88% lower risk of heart attacks!</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">🩸 New Blood Cells</h6>
+                            <p class="small mb-0">Stimulates production of fresh blood cells.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">⚖️ Burns Calories</h6>
+                            <p class="small mb-0">One donation burns approximately 650 calories!</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h6 class="fw-bold text-danger">🔬 Free Health Check</h6>
+                            <p class="small mb-0">Get free screening every time you donate.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">Free Health Screening Includes:</h4>
+                <ul class="mb-0">
+                    <li>Blood pressure measurement</li>
+                    <li>Hemoglobin level testing</li>
+                    <li>Screening for infectious diseases (HIV, Hepatitis B & C, Syphilis)</li>
+                    <li>Blood type identification</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info">
+                <h5 class="fw-bold">💡 Bonus Benefit</h5>
+                <p class="mb-0">Knowing you've helped save lives releases endorphins - the "feel-good" hormones!</p>
+            </div>
+
+            <div class="alert alert-success text-center">
+                <h5 class="fw-bold">Ready to Improve Your Health While Saving Lives?</h5>
+                <a href="{% url 'donors:register' %}" class="btn btn-success mt-2">Become a Donor Today</a>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mb-4">
+                <a href="{% url 'core:home' %}" class="btn btn-outline-danger btn-lg">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

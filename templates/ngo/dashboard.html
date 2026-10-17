@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NGO Dashboard - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">🤝 NGO Dashboard</h1>
+    
+    <div class="alert alert-info">
+        <strong>NGO:</strong> {{ ngo_profile.ngo_name }}
+        {% if ngo_profile.verification_status == 'pending' %}
+            <span class="badge bg-warning">Pending Verification</span>
+        {% elif ngo_profile.verification_status == 'verified' %}
+            <span class="badge bg-success">Verified</span>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">📋</div>
+                    <h3 class="text-success">{{ total_requests }}</h3>
+                    <p class="text-muted mb-0">Total Requests</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">⏳</div>
+                    <h3 class="text-warning">{{ pending_requests }}</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">👥</div>
+                    <h3 class="text-primary">{{ active_donors }}</h3>
+                    <p class="text-muted mb-0">Active Donors</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">📅</div>
+                    <h3 class="text-info">{{ total_camps }}</h3>
+                    <p class="text-muted mb-0">Blood Camps</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card profile-card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🤝 NGO Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>NGO Name:</strong> {{ ngo_profile.ngo_name }}</p>
+                    <p><strong>Type:</strong> {{ ngo_profile.get_ngo_type_display }}</p>
+                    <p><strong>GST Number:</strong> {{ ngo_profile.gst_number }}</p>
+                    <p><strong>Location:</strong> {{ ngo_profile.city }}, {{ ngo_profile.district }}, {{ ngo_profile.state }}</p>
+                    <p><strong>Pincode:</strong> {{ ngo_profile.pincode }}</p>
+                    <p><strong>Address:</strong> {{ ngo_profile.address }}</p>
+                    <p><strong>Contact:</strong> {{ ngo_profile.phone_number }}</p>
+                    <p><strong>Email:</strong> {{ ngo_profile.email }}</p>
+                    <p>
+                        <strong>Verification Status:</strong>
+                        {% if ngo_profile.verification_status == 'pending' %}
+                            <span class="badge bg-warning">Pending Verification</span>
+                            <br><small class="text-muted">Your NGO will be verified by admin shortly.</small>
+                        {% elif ngo_profile.verification_status == 'verified' %}
+                            <span class="badge bg-success">Verified ✓</span>
+                        {% elif ngo_profile.verification_status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </p>
+                    
+                    <a href="{% url 'ngos:profile' %}" class="btn btn-success">
+                        👁️ View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card quick-links-card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🔗 Quick Links</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'ngos:blood_requests_list' %}" class="list-group-item list-group-item-action">
+                        🩸 Blood Requests
+                        {% if pending_requests > 0 %}
+                            <span class="badge bg-danger float-end">{{ pending_requests }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'ngos:donor_management' %}" class="list-group-item list-group-item-action">
+                        👥 Donor Management
+                    </a>
+                    <a href="{% url 'ngos:camps_list' %}" class="list-group-item list-group-item-action">
+                        📅 Blood Camps
+                    </a>
+                    <a href="{% url 'ngos:create_camp' %}" class="list-group-item list-group-item-action">
+                        ➕ Create Blood Camp
+                    </a>
+                    <a href="{% url 'ngos:notifications' %}" class="list-group-item list-group-item-action">
+                        🔔 Notifications
+                        {% if unread_notifications_count > 0 %}
+                            <span class="badge bg-danger float-end">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if recent_requests %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-table shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">🔔 Recent Blood Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Hospital</th>
+                                    <th>Blood Group</th>
+                                    <th>Units</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in recent_requests %}
+                                <tr>
+                                    <td><strong>{{ request.request_id }}</strong></td>
+                                    <td>{{ request.hospital.hospital_name }}</td>
+                                    <td><span class="badge bg-danger">{{ request.blood_group }}</span></td>
+                                    <td>{{ request.units_fulfilled }} / {{ request.units_required }}</td>
+                                    <td>
+                                        {% if request.urgency == 'emergency' %}
+                                            <span class="badge bg-danger">EMERGENCY</span>
+                                        {% elif request.urgency == 'urgent' %}
+                                            <span class="badge bg-warning text-dark">URGENT</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ request.get_status_display }}</td>
+                                    <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'ngos:blood_request_detail' request.id %}" class="btn btn-sm btn-primary">
+                                            👁️ View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'ngos:blood_requests_list' %}" class="btn btn-primary">View All Requests</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        ℹ️ No blood requests assigned yet. You'll be notified when hospitals create requests.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

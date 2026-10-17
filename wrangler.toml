@@ -1,0 +1,18 @@
+# Cloudflare Workers/Pages configuration
+name = "blood-donor-system"
+compatibility_date = "2024-01-01"
+
+[site]
+bucket = "./staticfiles"
+
+[build]
+command = "python manage.py collectstatic --noinput"
+watch_dirs = ["static"]
+
+[env.production]
+# Add your environment variables here
+# SECRET_KEY = ""
+# DB_NAME = ""
+# DB_USER = ""
+# DB_PASSWORD = ""
+# DB_HOST = ""

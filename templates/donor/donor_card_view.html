@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donor Card - {{ donor_profile.full_name }} - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .donor-card-view {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .donor-card-display {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 3px solid #dc3545;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    .card-view-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .card-view-header i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .card-view-body {
+        padding: 2.5rem;
+        background: white;
+    }
+    
+    .donor-name-display {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+    
+    .donor-id-display {
+        text-align: center;
+        color: #6c757d;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .blood-group-badge-large {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+        border: 5px solid white;
+    }
+    
+    .blood-group-badge-large i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .blood-group-badge-large span {
+        font-size: 3rem;
+        font-weight: 700;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .info-item {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-value {
+        font-size: 1.2rem;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .info-value a {
+        color: #dc3545;
+        text-decoration: none;
+    }
+    
+    .info-value a:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 767px) {
+        .donor-name-display {
+            font-size: 1.8rem;
+        }
+        
+        .donor-id-display {
+            font-size: 1rem;
+        }
+        
+        .blood-group-badge-large {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .blood-group-badge-large i {
+            font-size: 2.5rem;
+        }
+        
+        .blood-group-badge-large span {
+            font-size: 2.5rem;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .info-item {
+            padding: 1rem;
+        }
+        
+        .info-value {
+            font-size: 1rem;
+        }
+        
+        .card-view-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="donor-card-view">
+        <div class="donor-card-display">
+            <div class="card-view-header">
+                🪪
+                <h1 class="mb-0">Blood Donor Card</h1>
+                <p class="mb-0 mt-2">RedFusion Blood Donor Network</p>
+            </div>
+            
+            <div class="card-view-body">
+                <div class="donor-name-display">{{ donor_profile.full_name }}</div>
+                <div class="donor-id-display">
+                    🪪 Donor ID: RF-{{ donor_profile.user.id|stringformat:"05d" }}
+                </div>
+                
+                <div class="blood-group-badge-large">
+                    🩸
+                    <span>{{ donor_profile.blood_group }}</span>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            📞 Phone Number
+                        </div>
+                        <div class="info-value">
+                            <a href="tel:{{ donor_profile.phone_number }}">{{ donor_profile.phone_number }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            ✉️ Email
+                        </div>
+                        <div class="info-value">
+                            <a href="mailto:{{ donor_profile.email }}">{{ donor_profile.email }}</a>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            📍 Location
+                        </div>
+                        <div class="info-value">{{ donor_profile.city }}, {{ donor_profile.state }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            🏥 District
+                        </div>
+                        <div class="info-value">{{ donor_profile.district }}</div>
+                    </div>
+                    
+                    {% if donor_profile.emergency_contact_number %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            🚨 Emergency Contact
+                        </div>
+                        <div class="info-value">
+                            <a href="tel:{{ donor_profile.emergency_contact_number }}">{{ donor_profile.emergency_contact_number }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if donor_profile.emergency_contact_name %}
+                    <div class="info-item">
+                        <div class="info-label">
+                            🛡️ Emergency Contact Name
+                        </div>
+                        <div class="info-value">{{ donor_profile.emergency_contact_name }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            🎂 Date of Birth
+                        </div>
+                        <div class="info-value">{{ donor_profile.date_of_birth|date:"F d, Y" }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">
+                            👤 Gender
+                        </div>
+                        <div class="info-value">{{ donor_profile.get_gender_display }}</div>
+                    </div>
+                    
+                    <div class="info-item" style="border-left-color: #28a745;">
+                        <div class="info-label">
+                            ✅ Valid Till
+                        </div>
+                        <div class="info-value" style="color: #28a745;">{{ valid_till|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-4 text-center">
+                    ℹ️ 
+                    <strong>For Blood Donation Requests:</strong> Please contact the donor using the phone number or email provided above.
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'core:home' %}" class="btn btn-danger btn-lg">
+                        🏠 Go to RedFusion Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ camp.camp_name }} - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2"><i class="fas fa-calendar-alt text-primary"></i> {{ camp.camp_name }}</h1>
+            <p class="text-muted">{{ camp.description }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card dashboard-stat-card bg-info text-white">
+                <div class="card-body py-3 text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ camp.registered_count }} / {{ camp.total_capacity }}</h3>
+                    <p class="mb-0"><small>Registered Donors</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Camp Details Card -->
+    <div class="card profile-card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Camp Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-calendar text-primary"></i>
+                        <strong>Date:</strong> {{ camp.camp_date|date:"l, F d, Y" }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-clock text-primary"></i>
+                        <strong>Time:</strong> {{ camp.start_time|time:"h:i A" }} - {{ camp.end_time|time:"h:i A" }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt text-primary"></i>
+                        <strong>Venue:</strong> {{ camp.venue_name }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-address-card text-primary"></i>
+                        <strong>Address:</strong> {{ camp.address }}, {{ camp.district }}, {{ camp.state }} - {{ camp.pincode }}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-2">
+                        <i class="fas fa-phone text-primary"></i>
+                        <strong>Contact:</strong> {{ camp.contact_number }}
+                    </p>
+                    {% if camp.contact_person %}
+                    <p class="mb-2">
+                        <i class="fas fa-user text-primary"></i>
+                        <strong>Contact Person:</strong> {{ camp.contact_person }}
+                    </p>
+                    {% endif %}
+                    <p class="mb-2">
+                        <i class="fas fa-users text-primary"></i>
+                        <strong>Capacity:</strong> {{ camp.total_capacity }} donors
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-tag text-primary"></i>
+                        <strong>Status:</strong>
+                        {% if camp.status == 'upcoming' %}
+                            <span class="badge bg-info">Upcoming</span>
+                        {% elif camp.status == 'ongoing' %}
+                            <span class="badge bg-warning">Ongoing</span>
+                        {% elif camp.status == 'completed' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elif camp.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-door-open text-primary"></i>
+                        <strong>Registration:</strong>
+                        {% if camp.is_registration_open %}
+                            <span class="badge bg-success">Open</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Closed</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'ngos:edit_camp' camp.id %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Camp
+                </a>
+                <a href="{% url 'ngos:camps_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Camps List
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registered Donors Section -->
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-users"></i> Registered Donors ({{ total_registrations }})
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if registrations %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Donor Name</th>
+                                <th>Blood Group</th>
+                                <th>Contact</th>
+                                <th>Location</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registration in registrations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>{{ registration.donor.full_name }}</strong>
+                                    {% if registration.donor.gender == 'male' %}
+                                        <i class="fas fa-mars text-primary"></i>
+                                    {% elif registration.donor.gender == 'female' %}
+                                        <i class="fas fa-venus text-danger"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">{{ registration.donor.blood_group }}</span>
+                                </td>
+                                <td>
+                                    <small>
+                                        <i class="fas fa-phone text-success"></i> {{ registration.donor.phone_number }}<br>
+                                        <i class="fas fa-envelope text-primary"></i> {{ registration.donor.email }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <small>{{ registration.donor.district }}, {{ registration.donor.state }}</small>
+                                </td>
+                                <td>
+                                    <small>{{ registration.registration_date|date:"M d, Y" }}<br>{{ registration.registration_date|time:"h:i A" }}</small>
+                                </td>
+                                <td>
+                                    {% if registration.status == 'registered' %}
+                                        <span class="badge bg-primary">Registered</span>
+                                    {% elif registration.status == 'confirmed' %}
+                                        <span class="badge bg-info">Confirmed</span>
+                                    {% elif registration.status == 'attended' %}
+                                        <span class="badge bg-success">Attended</span>
+                                    {% elif registration.status == 'donated' %}
+                                        <span class="badge bg-success">Donated</span>
+                                    {% elif registration.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    {% elif registration.status == 'no_show' %}
+                                        <span class="badge bg-warning">No Show</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'ngos:donor_detail' registration.donor.pk %}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-3 alert dashboard-alert alert-info">
+                    <strong><i class="fas fa-info-circle"></i> Statistics:</strong><br>
+                    Total Registered: <strong>{{ camp.registered_count }}</strong> |
+                    Capacity: <strong>{{ camp.total_capacity }}</strong> |
+                    Available Spots: <strong>{{ camp.available_seats }}</strong>
+                    {% if camp.is_full %}
+                        | <span class="badge status-emergency">CAMP FULL</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle"></i> No donors have registered for this camp yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

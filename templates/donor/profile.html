@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">👤 My Profile</h1>
+    
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <div style="font-size: 10rem; line-height: 1;">👤</div>
+                    <h3>{{ donor_profile.full_name }}</h3>
+                    <h1 class="text-danger">{{ donor_profile.blood_group }}</h1>
+                    <p class="text-muted">Blood Group</p>
+                    <a href="{% url 'donors:edit_profile' %}" class="btn btn-primary">
+                        ✏️ Edit Profile
+                    </a>
+                </div>
+                
+                <div class="col-md-8">
+                    <h4 class="text-danger mb-3">Personal Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Full Name:</th>
+                            <td>{{ donor_profile.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date of Birth:</th>
+                            <td>{{ donor_profile.date_of_birth|date:"F d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Gender:</th>
+                            <td>{{ donor_profile.get_gender_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Blood Group:</th>
+                            <td><span class="badge bg-danger fs-6">{{ donor_profile.blood_group }}</span></td>
+                        </tr>
+                    </table>
+                    
+                    <h4 class="text-danger mb-3 mt-4">Contact Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Phone:</th>
+                            <td>{{ donor_profile.phone_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ donor_profile.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Preferred Contact:</th>
+                            <td>{{ donor_profile.get_preferred_contact_method_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ donor_profile.address }}, {{ donor_profile.city }}, {{ donor_profile.district }}, {{ donor_profile.state }} - {{ donor_profile.pincode }}</td>
+                        </tr>
+                    </table>
+                    
+                    <h4 class="text-danger mb-3 mt-4">Medical Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Last Donation:</th>
+                            <td>
+                                {% if donor_profile.last_donation_date %}
+                                    {{ donor_profile.last_donation_date|date:"F d, Y" }}
+                                {% else %}
+                                    Never donated
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total Donations:</th>
+                            <td>{{ donor_profile.total_donations }}</td>
+                        </tr>
+                        <tr>
+                            <th>Medical Certificate:</th>
+                            <td>
+                                {% if donor_profile.medical_certificate %}
+                                    <a href="{{ donor_profile.medical_certificate.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        📄 View Certificate
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Not uploaded</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Availability:</th>
+                            <td>
+                                {% if donor_profile.is_available %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Not Available</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'donors:dashboard' %}" class="btn btn-primary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

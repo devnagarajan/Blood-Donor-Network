@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if is_emergency %}🚨 Emergency {% endif %}Blood Request - RedFusion
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card {% if is_emergency %}border-danger border-3 shadow-lg emergency-card{% else %}shadow{% endif %}">
+                <div class="card-header {% if is_emergency %}bg-danger{% else %}bg-primary{% endif %} text-white text-center py-4">
+                    <h2 class="mb-0">
+                        {% if is_emergency %}
+                            <i class="fas fa-ambulance"></i> 🚨 Emergency Blood Request
+                        {% else %}
+                            <i class="fas fa-tint"></i> Blood Request
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    {% if is_emergency %}
+                        <div class="dashboard-alert alert-danger text-center">
+                            <h5 class="mb-2"><i class="fas fa-exclamation-triangle fa-2x"></i></h5>
+                            <h5 class="mb-2">CRITICAL EMERGENCY</h5>
+                            <p class="mb-0">NGO and donors will be notified immediately!</p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Hospital Info Display -->
+                    <div class="card profile-card mb-4">
+                        <div class="card-header {% if is_emergency %}bg-warning text-dark{% else %}bg-info text-white{% endif %}">
+                            <h6 class="mb-0"><i class="fas fa-hospital"></i> Hospital Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>{{ hospital_profile.hospital_name }}</strong></p>
+                            <p class="mb-1 small">
+                                <i class="fas fa-map-marker-alt text-danger"></i> {{ hospital_profile.district }}, {{ hospital_profile.state }}
+                            </p>
+                            <p class="mb-0 small">
+                                <i class="fas fa-phone text-success"></i> {{ hospital_profile.emergency_contact_number }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Blood Group -->
+                        <div class="mb-4">
+                            <label for="{{ form.blood_group.id_for_label }}" class="form-label">
+                                <h5 class="text-danger mb-3">
+                                    <i class="fas fa-tint"></i> Which Blood Group? *
+                                </h5>
+                            </label>
+                            {{ form.blood_group }}
+                            {% if form.blood_group.errors %}
+                                <div class="text-danger mt-2">{{ form.blood_group.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Units Required -->
+                        <div class="mb-4">
+                            <label for="{{ form.units_required.id_for_label }}" class="form-label">
+                                <h5 class="text-danger mb-3">
+                                    <i class="fas fa-flask"></i> How Many Units? *
+                                </h5>
+                            </label>
+                            {{ form.units_required }}
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i> 1 unit = 450ml of blood | Typically 1-3 units needed
+                            </small>
+                            {% if form.units_required.errors %}
+                                <div class="text-danger mt-2">{{ form.units_required.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Required Date -->
+                        <div class="mb-4">
+                            <label for="{{ form.required_date.id_for_label }}" class="form-label">
+                                <h5 class="text-danger mb-3">
+                                    <i class="fas fa-calendar"></i> When Do You Need It? *
+                                </h5>
+                            </label>
+                            {{ form.required_date }}
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i> Select the date when you need the blood
+                            </small>
+                            {% if form.required_date.errors %}
+                                <div class="text-danger mt-2">{{ form.required_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Info Box -->
+                        <div class="card quick-links-card mt-4">
+                            <div class="card-header {% if is_emergency %}bg-danger text-white{% else %}bg-success text-white{% endif %}">
+                                <h6 class="mb-0"><i class="fas fa-magic"></i> What happens automatically?</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="mb-0">
+                                    <li class="mb-2">✅ Request ID generated (BR-YYYY-NNNNNN)</li>
+                                    <li class="mb-2">✅ NGO assigned for coordination</li>
+                                    <li class="mb-2">✅ Matching donors found by blood group + location</li>
+                                    <li class="mb-2">✅ <strong>Email sent to NGO</strong> with your hospital details</li>
+                                    <li class="mb-2">✅ <strong>Email sent to matched donors</strong></li>
+                                    {% if is_emergency %}
+                                    <li class="mb-0">🚨 <strong>CRITICAL priority - Immediate notification</strong></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-grid gap-2 mt-4">
+                            {% if is_emergency %}
+                                <button type="submit" class="btn btn-danger btn-lg py-3 pulse-button">
+                                    <i class="fas fa-ambulance"></i> 🚨 Submit Emergency Request Now
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary btn-lg py-3">
+                                    <i class="fas fa-paper-plane"></i> Submit Blood Request
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-home"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Emergency CTA (only for normal request) -->
+            {% if not is_emergency %}
+            <div class="card border-danger mt-4 shadow emergency-card">
+                <div class="card-body text-center py-4">
+                    <h5 class="text-danger mb-3">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </h5>
+                    <h5 class="text-danger mb-3">
+                        Is this a Life-Threatening Emergency?
+                    </h5>
+                    <p class="mb-3">For critical/immediate situations, use Emergency Request</p>
+                    <a href="{% url 'hospitals:create_emergency_request' %}" class="btn btn-danger btn-lg pulse-button">
+                        <i class="fas fa-ambulance"></i> 🚨 Switch to Emergency Request
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

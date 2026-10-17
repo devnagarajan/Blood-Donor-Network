@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}NGO Registration - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-hands-helping fa-4x text-success mb-3"></i>
+                        <h2>NGO Registration</h2>
+                        <p class="text-muted">Register your NGO to coordinate blood donations</p>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h4 class="mb-3 text-success">Account Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.username.id_for_label }}" class="form-label">Username *</label>
+                                {{ user_form.username }}
+                                {% if user_form.username.errors %}
+                                    <div class="text-danger">{{ user_form.username.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.ngo_name.id_for_label }}" class="form-label">NGO Name *</label>
+                                {{ user_form.ngo_name }}
+                                {% if user_form.ngo_name.errors %}
+                                    <div class="text-danger">{{ user_form.ngo_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ user_form.email.id_for_label }}" class="form-label">Email *</label>
+                                {{ user_form.email }}
+                                {% if user_form.email.errors %}
+                                    <div class="text-danger">{{ user_form.email.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ user_form.phone_number.id_for_label }}" class="form-label">Phone *</label>
+                                {{ user_form.phone_number }}
+                                {% if user_form.phone_number.errors %}
+                                    <div class="text-danger">{{ user_form.phone_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ profile_form.ngo_type.id_for_label }}" class="form-label">NGO Type *</label>
+                                {{ profile_form.ngo_type }}
+                                {% if profile_form.ngo_type.errors %}
+                                    <div class="text-danger">{{ profile_form.ngo_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.password1.id_for_label }}" class="form-label">Password *</label>
+                                {{ user_form.password1 }}
+                                {% if user_form.password1.errors %}
+                                    <div class="text-danger">{{ user_form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.password2.id_for_label }}" class="form-label">Confirm Password *</label>
+                                {{ user_form.password2 }}
+                                {% if user_form.password2.errors %}
+                                    <div class="text-danger">{{ user_form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        <h4 class="mb-3 text-success">NGO Details</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ profile_form.gst_number.id_for_label }}" class="form-label">GST Number *</label>
+                                {{ profile_form.gst_number }}
+                                <small class="form-text text-muted">Format: 22AAAAA0000A1Z5</small>
+                                {% if profile_form.gst_number.errors %}
+                                    <div class="text-danger">{{ profile_form.gst_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ profile_form.gst_document.id_for_label }}" class="form-label">GST Document</label>
+                                {{ profile_form.gst_document }}
+                                <small class="form-text text-muted">Upload GST Certificate (PDF, JPG, PNG)</small>
+                                {% if profile_form.gst_document.errors %}
+                                    <div class="text-danger">{{ profile_form.gst_document.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ profile_form.address.id_for_label }}" class="form-label">Address *</label>
+                            {{ profile_form.address }}
+                            {% if profile_form.address.errors %}
+                                <div class="text-danger">{{ profile_form.address.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ profile_form.state.id_for_label }}" class="form-label">State *</label>
+                                {{ profile_form.state }}
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ profile_form.district.id_for_label }}" class="form-label">District *</label>
+                                {{ profile_form.district }}
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ profile_form.city.id_for_label }}" class="form-label">City *</label>
+                                {{ profile_form.city }}
+                            </div>
+                            
+                            <div class="col-md-3 mb-3">
+                                <label for="{{ profile_form.pincode.id_for_label }}" class="form-label">Pincode *</label>
+                                {{ profile_form.pincode }}
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100 btn-lg mt-3">
+                            <i class="fas fa-hands-helping"></i> Register NGO
+                        </button>
+                        
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Already registered? 
+                                <a href="{% url 'ngos:login' %}" class="text-success">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

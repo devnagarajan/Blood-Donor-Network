@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donation Confirmations - Hospital Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #dc3545;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .filter-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .confirmations-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .confirmations-table table {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .confirmations-table th {
+        background: #dc3545;
+        color: white;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: left;
+    }
+    
+    .confirmations-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .confirmations-table tr:hover {
+        background: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold" style="color: #2c3e50;">✅ Donation Confirmations</h2>
+        <div class="btn-group">
+            {% if confirmations %}
+            <a href="{% url 'hospitals:export_confirmations_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                📊 Export Excel/CSV
+            </a>
+            <a href="{% url 'hospitals:export_confirmations_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-info">
+                📄 Export PDF
+            </a>
+            {% endif %}
+            <a href="{% url 'hospitals:confirm_donation' %}" class="btn btn-danger">
+                ➕ Confirm New Donation
+            </a>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #28a745;">{{ stats.completed }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #6c757d;">{{ stats.verified }}</div>
+            <div class="stat-label">Verified</div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filter-card">
+        <h5 class="fw-bold mb-3" style="color: #2c3e50;">🔍 Filters</h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Blood Group</label>
+                <select name="blood_group" class="form-select">
+                    <option value="">All Groups</option>
+                    <option value="A+" {% if blood_group_filter == 'A+' %}selected{% endif %}>A+</option>
+                    <option value="A-" {% if blood_group_filter == 'A-' %}selected{% endif %}>A-</option>
+                    <option value="B+" {% if blood_group_filter == 'B+' %}selected{% endif %}>B+</option>
+                    <option value="B-" {% if blood_group_filter == 'B-' %}selected{% endif %}>B-</option>
+                    <option value="AB+" {% if blood_group_filter == 'AB+' %}selected{% endif %}>AB+</option>
+                    <option value="AB-" {% if blood_group_filter == 'AB-' %}selected{% endif %}>AB-</option>
+                    <option value="O+" {% if blood_group_filter == 'O+' %}selected{% endif %}>O+</option>
+                    <option value="O-" {% if blood_group_filter == 'O-' %}selected{% endif %}>O-</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-danger flex-grow-1">Apply</button>
+                <a href="{% url 'hospitals:donation_confirmations_list' %}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Confirmations Table -->
+    {% if confirmations %}
+    <div class="confirmations-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Donation ID</th>
+                    <th>Donor ID</th>
+                    <th>Donor</th>
+                    <th>Blood Group</th>
+                    <th>Date & Time</th>
+                    <th>Units</th>
+                    <th>Blood Bag ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for confirmation in confirmations %}
+                <tr>
+                    <td>
+                        <strong class="text-danger">{{ confirmation.donation_id }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">{{ confirmation.donor.donor_id }}</span>
+                    </td>
+                    <td>
+                        <strong>{{ confirmation.donor.full_name }}</strong><br>
+                        <small class="text-muted">{{ confirmation.donor.phone_number }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">{{ confirmation.blood_group }}</span>
+                    </td>
+                    <td>
+                        {{ confirmation.donation_datetime|date:"d M Y" }}<br>
+                        <small class="text-muted">{{ confirmation.donation_datetime|time:"h:i A" }}</small>
+                    </td>
+                    <td>{{ confirmation.units_donated }}</td>
+                    <td><code>{{ confirmation.blood_bag_id }}</code></td>
+                    <td>
+                        {% if confirmation.status == 'completed' %}
+                            <span class="badge bg-success">✓ Completed</span>
+                        {% elif confirmation.status == 'verified' %}
+                            <span class="badge bg-info">✓ Verified</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ confirmation.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'hospitals:donation_confirmation_detail' confirmation.id %}" class="btn btn-sm btn-outline-primary">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Back to Dashboard Button -->
+    <div class="mt-4">
+        <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+    {% else %}
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+        <div class="card-body text-center py-5">
+            <i style="font-size: 4rem; color: #dee2e6;">📋</i>
+            <h4 class="mt-3 text-muted">No Donation Confirmations Found</h4>
+            <p class="text-muted">Start by confirming a donation</p>
+            <a href="{% url 'hospitals:confirm_donation' %}" class="btn btn-danger mt-2">
+                ➕ Confirm First Donation
+            </a>
+        </div>
+    </div>
+    
+    <!-- Back to Dashboard Button -->
+    <div class="mt-4">
+        <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary btn-lg">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

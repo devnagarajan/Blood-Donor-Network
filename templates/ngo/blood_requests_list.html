@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blood Requests - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">📋 Blood Requests</h1>
+            <p class="text-muted">Manage and respond to blood requests from hospitals</p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if requests %}
+            <div class="card dashboard-stat-card bg-success text-white mb-0">
+                <div class="card-body py-2 px-3 text-center">
+                    <h4 class="mb-0">{{ requests|length }}</h4>
+                    <small>Total Requests</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if requests %}
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                📋 All Blood Requests
+            </h5>
+            <div class="btn-group">
+                <a href="{% url 'ngos:export_blood_requests_csv' %}" class="btn btn-light btn-sm">
+                    📊 Export Excel/CSV
+                </a>
+                <a href="{% url 'ngos:export_blood_requests_pdf' %}" class="btn btn-light btn-sm">
+                    📄 Export PDF
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Hospital</th>
+                            <th>Blood Group</th>
+                            <th>Units</th>
+                            <th>Urgency</th>
+                            <th>Required By</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ request.request_id }}</strong>
+                            </td>
+                            <td>
+                                🏥 {{ request.hospital.hospital_name }}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger fs-6">{{ request.blood_group }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ request.units_fulfilled }}</strong> / {{ request.units_required }}
+                                {% if request.units_fulfilled >= request.units_required %}
+                                    ✅
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.urgency == 'emergency' %}
+                                    <span class="badge status-emergency">
+                                        ⚠️ EMERGENCY
+                                    </span>
+                                {% elif request.urgency == 'urgent' %}
+                                    <span class="badge bg-warning text-dark">
+                                        🕐 URGENT
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-info">Normal</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    📅 {{ request.required_date|date:"M d, Y" }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if request.status == 'pending' %}
+                                    <span class="badge status-pending">{{ request.get_status_display }}</span>
+                                {% elif request.status == 'accepted' %}
+                                    <span class="badge bg-info">{{ request.get_status_display }}</span>
+                                {% elif request.status == 'partially_fulfilled' %}
+                                    <span class="badge bg-warning text-dark">{{ request.get_status_display }}</span>
+                                {% elif request.status == 'fulfilled' %}
+                                    <span class="badge bg-success">{{ request.get_status_display }}</span>
+                                {% elif request.status == 'cancelled' %}
+                                    <span class="badge bg-danger">{{ request.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ request.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ngos:blood_request_detail' request.id %}" class="btn btn-sm btn-primary">
+                                    👁️ View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-5">
+            <div style="font-size: 4rem; line-height: 1;" class="text-muted mb-3">📋</div>
+            <h4 class="text-muted">No Blood Requests</h4>
+            <p class="text-muted mb-0">There are no blood requests assigned to your NGO yet. Check back later!</p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{% url 'ngos:dashboard' %}" class="btn btn-secondary">
+            🏠 Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}NGO Login - RedFusion{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-hands-helping fa-4x text-success mb-3"></i>
+                        <h2>NGO Login</h2>
+                        <p class="text-muted">Login to access your NGO dashboard</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" required autofocus>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="text-end mt-2">
+                                <a href="{% url 'password_reset' %}" class="text-success text-decoration-none">
+                                    <small>🔑 Forgot Password?</small>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100 mb-3">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{% url 'ngos:register' %}" class="text-success">Register NGO</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

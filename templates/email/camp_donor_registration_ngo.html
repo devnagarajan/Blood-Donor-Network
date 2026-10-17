@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            background-color: #17a2b8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 0 0 5px 5px;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .details-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .details-box table {
+            width: 100%;
+        }
+        .details-box td {
+            padding: 8px 0;
+        }
+        .details-box td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+        .blood-group {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .stats-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin: 0;">📋 New Camp Registration</h1>
+            <p style="margin: 5px 0 0 0;">RedFusion</p>
+        </div>
+        
+        <div class="content">
+            <p>Dear <strong>{{ ngo.ngo_name }}</strong>,</p>
+            
+            <div class="info-box">
+                <strong>🎉 Great News!</strong> A donor has registered for your upcoming blood donation camp!
+            </div>
+            
+            <h3 style="color: #17a2b8; margin-top: 30px;">Camp Information</h3>
+            <div class="details-box">
+                <table>
+                    <tr>
+                        <td>📋 Camp Name:</td>
+                        <td><strong>{{ camp.camp_name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>📅 Date:</td>
+                        <td>{{ camp.camp_date|date:"l, F d, Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td>🕐 Time:</td>
+                        <td>{{ camp.start_time|time:"h:i A" }} - {{ camp.end_time|time:"h:i A" }}</td>
+                    </tr>
+                    <tr>
+                        <td>📍 Venue:</td>
+                        <td>{{ camp.venue_name }}<br>{{ camp.address }}<br>{{ camp.district }}, {{ camp.state }} - {{ camp.pincode }}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3 style="color: #dc3545; margin-top: 30px;">Registered Donor Details</h3>
+            <div class="details-box">
+                <table>
+                    <tr>
+                        <td>👤 Name:</td>
+                        <td><strong>{{ donor.full_name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>🩸 Blood Group:</td>
+                        <td><span class="blood-group">{{ donor.blood_group }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>📱 Phone:</td>
+                        <td>{{ donor.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>📧 Email:</td>
+                        <td>{{ donor.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>📍 Location:</td>
+                        <td>{{ donor.district }}, {{ donor.state }}</td>
+                    </tr>
+                    <tr>
+                        <td>🎂 Age:</td>
+                        <td>{{ donor.age }} years</td>
+                    </tr>
+                    <tr>
+                        <td>⚖️ Weight:</td>
+                        <td>{{ donor.weight }} kg</td>
+                    </tr>
+                    <tr>
+                        <td>📅 Registered On:</td>
+                        <td>{{ registration.registration_date|date:"M d, Y h:i A" }}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="stats-box">
+                <h4 style="margin-top: 0;">📊 Camp Registration Status</h4>
+                <p style="margin: 10px 0;">
+                    <strong>Total Registered:</strong> {{ camp.registered_count }} / {{ camp.total_capacity }} donors<br>
+                    <strong>Available Spots:</strong> {{ camp.total_capacity|add:"-"|add:camp.registered_count }} remaining
+                    {% if camp.is_full %}
+                        <br><span class="badge badge-warning">⚠️ CAMP FULL</span>
+                    {% else %}
+                        <br><span class="badge badge-success">✅ Open for Registration</span>
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div style="background-color: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; margin: 20px 0;">
+                <strong>📌 Next Steps:</strong>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>View all camp registrations in the NGO portal</li>
+                    <li>Contact the donor if needed for confirmation</li>
+                    <li>Prepare for the blood donation camp</li>
+                    <li>Update attendance on camp day</li>
+                </ul>
+            </div>
+            
+            <p style="margin-top: 30px;">
+                <strong>Thank you for organizing blood donation camps!</strong><br>
+                Together, we're building a life-saving community. 💚
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>
+                RedFusion © 2026<br>
+                This is an automated notification. Please do not reply to this email.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donor Dashboard - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// Generate QR Code on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const donorId = '{{ donor_profile.user.id }}';
+    
+    // Create QR code URL pointing to donor card view page
+    const qrURL = window.location.origin + '/donor/card/{{ donor_profile.user.id }}/';
+    
+    // Generate QR code with black color
+    new QRCode(document.getElementById('qrcode-' + donorId), {
+        text: qrURL,
+        width: 60,
+        height: 60,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+});
+
+function downloadDonorCard() {
+    const card = document.getElementById('donor-card');
+    const downloadBtn = event.target.closest('button');
+    
+    // Change button text
+    const originalHTML = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = '⏳ Generating...';
+    downloadBtn.disabled = true;
+    
+    // Use html2canvas to capture the card
+    html2canvas(card, {
+        scale: 3,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true,
+        width: 450,
+        height: 260
+    }).then(canvas => {
+        // Convert canvas to blob
+        canvas.toBlob(function(blob) {
+            // Create download link
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'RedFusion_Donor_Card_RF-{{ donor_profile.user.id|stringformat:"05d" }}.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            // Restore button
+            downloadBtn.innerHTML = originalHTML;
+            downloadBtn.disabled = false;
+            
+            // Show success message
+            alert('✅ Donor card downloaded successfully!');
+        });
+    }).catch(error => {
+        console.error('Error generating card:', error);
+        downloadBtn.innerHTML = originalHTML;
+        downloadBtn.disabled = false;
+        alert('❌ Error generating card. Please try again.');
+    });
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">📊 Donor Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <h1 class="text-danger mb-0">❤️</h1>
+                    <h3 class="text-danger">{{ donor_profile.blood_group }}</h3>
+                    <p class="text-muted mb-0">Your Blood Group</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <h1 class="text-success mb-0">🩸</h1>
+                    <h3 class="text-success">{{ total_donations }}</h3>
+                    <p class="text-muted mb-0">Total Donations</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <h1 class="text-warning mb-0">🔔</h1>
+                    <h3 class="text-warning">{{ unread_notifications_count }}</h3>
+                    <p class="text-muted mb-0">New Notifications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        <div class="col-md-12 mb-4">
+            <div class="card profile-card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">👤 Profile Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Donor ID:</strong> <span class="badge bg-danger">{{ donor_profile.donor_id|default:"Generating..." }}</span></p>
+                    <p><strong>Name:</strong> {{ donor_profile.full_name }}</p>
+                    <p><strong>Blood Group:</strong> <span class="badge bg-danger">{{ donor_profile.blood_group }}</span></p>
+                    <p><strong>Location:</strong> {{ donor_profile.city }}, {{ donor_profile.district }}, {{ donor_profile.state }}</p>
+                    <p><strong>Phone:</strong> {{ donor_profile.phone_number }}</p>
+                    <p><strong>Email:</strong> {{ donor_profile.email }}</p>
+                    
+                    {% if donor_profile.last_donation_date %}
+                        <p><strong>Last Donation:</strong> {{ donor_profile.last_donation_date|date:"F d, Y" }}</p>
+                    {% else %}
+                        <p><strong>Last Donation:</strong> <span class="text-muted">Never donated</span></p>
+                    {% endif %}
+                    
+                    {% if is_eligible %}
+                        <div class="alert alert-success">
+                            ✅ You are eligible to donate!
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            🕐 Next eligible date: {{ next_eligible|date:"F d, Y" }}
+                            <br><small>You must wait 90 days between donations</small>
+                        </div>
+                    {% endif %}
+                    
+                    <p>
+                        <strong>Availability:</strong> 
+                        {% if donor_profile.is_available %}
+                            <span class="badge bg-success">Available</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Not Available</span>
+                        {% endif %}
+                    </p>
+                    
+                    <a href="{% url 'donors:profile' %}" class="btn btn-primary">
+                        👁️ View Full Profile
+                    </a>
+                    <a href="{% url 'donors:edit_profile' %}" class="btn btn-outline-primary">
+                        ✏️ Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Donor ID Card -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">🪪 My Donor Card</h5>
+                    <button onclick="downloadDonorCard()" class="btn btn-light btn-sm">
+                        💾 Download Card
+                    </button>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <!-- Donor Card Design - Visiting Card Size -->
+                    <div id="donor-card" class="donor-visiting-card">
+                        <!-- Card Front Side -->
+                        <div class="card-front">
+                            <div class="card-header-mini">
+                                <div class="card-logo-mini">
+                                    💓
+                                </div>
+                                <div class="card-title-mini">
+                                    <h4>RedFusion</h4>
+                                    <span>Blood Donor ID</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-content-mini">
+                                <div class="donor-details-left">
+                                    <div class="donor-name-mini">{{ donor_profile.full_name }}</div>
+                                    
+                                    <div class="donor-info-row">
+                                        🪪
+                                        <span>{{ donor_profile.donor_id|default:"Pending" }}</span>
+                                    </div>
+                                    
+                                    <div class="donor-info-row">
+                                        🩸
+                                        <span class="blood-text">{{ donor_profile.blood_group }}</span>
+                                    </div>
+                                    
+                                    <div class="donor-info-row">
+                                        📞
+                                        <span>{{ donor_profile.phone_number }}</span>
+                                    </div>
+                                    
+                                    <div class="donor-info-row">
+                                        📍
+                                        <span>{{ donor_profile.city }}, {{ donor_profile.state }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="donor-qr-section">
+                                    <div id="qrcode-{{ donor_profile.user.id }}" class="qr-code-container"></div>
+                                    <div class="qr-label">Scan Me</div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer-mini">
+                                <div class="footer-right">
+                                    Valid Till: {{ next_year|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Links Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card quick-links-card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🔗 Quick Links</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'donors:blood_requests' %}" class="list-group-item list-group-item-action">
+                        🩺 Blood Requests Received
+                    </a>
+                    <a href="{% url 'donors:donation_history' %}" class="list-group-item list-group-item-action">
+                        📜 Donation History
+                    </a>
+                    <a href="{% url 'camps:camps_list' %}" class="list-group-item list-group-item-action">
+                        📅 Blood Camps
+                    </a>
+                    <a href="{% url 'donors:notifications' %}" class="list-group-item list-group-item-action">
+                        🔔 Notifications
+                        {% if unread_notifications_count > 0 %}
+                            <span class="badge bg-danger float-end">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+    {% if recent_requests %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-table shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">🔔 Recent Blood Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Hospital</th>
+                                    <th>Blood Group</th>
+                                    <th>Units</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for match in recent_requests %}
+                                <tr>
+                                    <td>{{ match.blood_request.request_id }}</td>
+                                    <td>{{ match.blood_request.hospital.hospital_name }}</td>
+                                    <td><span class="badge bg-danger">{{ match.blood_request.blood_group }}</span></td>
+                                    <td>{{ match.blood_request.units_required }}</td>
+                                    <td>
+                                        {% if match.blood_request.urgency == 'emergency' %}
+                                            <span class="badge bg-danger">Emergency</span>
+                                        {% elif match.blood_request.urgency == 'urgent' %}
+                                            <span class="badge bg-warning">Urgent</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ match.blood_request.get_status_display }}</td>
+                                    <td>{{ match.notified_at|date:"M d, Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'donors:blood_requests' %}" class="btn btn-primary">View All Requests</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Blood Requests - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">My Blood Requests</h1>
+            <p class="text-muted">Manage and track all your blood donation requests</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card dashboard-stat-card bg-danger text-white">
+                <div class="card-body py-3 text-center">
+                    <i class="fas fa-heartbeat fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ requests.count|default:0 }}</h3>
+                    <small>Total Requests</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filter Card -->
+    <div class="card profile-card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-filter"></i> Filter Requests</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Blood Group</label>
+                    <select name="blood_group" class="form-control">
+                        <option value="">All Blood Groups</option>
+                        <option value="A+" {% if request.GET.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if request.GET.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if request.GET.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if request.GET.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                        <option value="AB+" {% if request.GET.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if request.GET.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+                        <option value="O+" {% if request.GET.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if request.GET.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-control">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="accepted" {% if request.GET.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                        <option value="partially_fulfilled" {% if request.GET.status == 'partially_fulfilled' %}selected{% endif %}>Partially Fulfilled</option>
+                        <option value="fulfilled" {% if request.GET.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100 d-block">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <a href="{% url 'hospitals:create_blood_request' %}" class="btn btn-danger w-100 d-block">
+                        <i class="fas fa-plus"></i> New Request
+                    </a>
+                </div>
+            </form>
+            {% if request.GET.blood_group or request.GET.status %}
+            <div class="mt-3">
+                <a href="{% url 'hospitals:blood_requests_list' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-times"></i> Clear Filters
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Requests Table -->
+    {% if requests %}
+    <div class="card dashboard-table shadow">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Blood Requests ({{ requests.count }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Blood Group</th>
+                            <th>Units</th>
+                            <th>Patient</th>
+                            <th>Urgency</th>
+                            <th>Required By</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                        <tr>
+                            <td><strong>{{ request.request_id }}</strong></td>
+                            <td><span class="badge bg-danger fs-6">{{ request.blood_group }}</span></td>
+                            <td>
+                                <strong>{{ request.units_fulfilled }} / {{ request.units_required }}</strong> units
+                            </td>
+                            <td>
+                                <i class="fas fa-user-injured text-info"></i> {{ request.patient_name }}, {{ request.patient_age }} yrs
+                            </td>
+                            <td>
+                                {% if request.urgency == 'emergency' %}
+                                    <span class="badge status-emergency">
+                                        <i class="fas fa-exclamation-triangle"></i> EMERGENCY
+                                    </span>
+                                {% elif request.urgency == 'urgent' %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-clock"></i> URGENT
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-info-circle"></i> Normal
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar text-muted"></i> {{ request.required_date|date:"M d, Y" }}
+                            </td>
+                            <td>
+                                {% if request.status == 'pending' %}
+                                    <span class="badge status-pending">Pending</span>
+                                {% elif request.status == 'accepted' %}
+                                    <span class="badge bg-info">Accepted</span>
+                                {% elif request.status == 'partially_fulfilled' %}
+                                    <span class="badge bg-warning">Partially Fulfilled</span>
+                                {% elif request.status == 'fulfilled' %}
+                                    <span class="badge bg-success">Fulfilled</span>
+                                {% elif request.status == 'cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ request.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ request.created_at|date:"M d, Y" }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'hospitals:blood_request_detail' request.id %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card dashboard-alert shadow">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-clipboard fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No Blood Requests Found</h4>
+            <p class="text-muted mb-3">
+                {% if request.GET.blood_group or request.GET.status %}
+                    No requests match your filter criteria. Try clearing filters.
+                {% else %}
+                    You haven't created any blood requests yet.
+                {% endif %}
+            </p>
+            <a href="{% url 'hospitals:create_blood_request' %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-plus-circle"></i> Create Your First Request
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="{% url 'hospitals:dashboard' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-home"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

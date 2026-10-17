@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hospital Dashboard - RedFusion{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">🏥 Hospital Dashboard</h1>
+    
+    <div class="alert alert-info">
+        <strong>Hospital:</strong> {{ hospital_profile.hospital_name }}
+        {% if hospital_profile.verification_status == 'pending' %}
+            <span class="badge bg-warning">Pending Verification</span>
+        {% elif hospital_profile.verification_status == 'verified' %}
+            <span class="badge bg-success">Verified</span>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">📋</div>
+                    <h3 class="text-primary">{{ total_requests }}</h3>
+                    <p class="text-muted mb-0">Total Requests</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">⏳</div>
+                    <h3 class="text-warning">{{ pending_requests }}</h3>
+                    <p class="text-muted mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">✅</div>
+                    <h3 class="text-success">{{ fulfilled_requests }}</h3>
+                    <p class="text-muted mb-0">Fulfilled</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card dashboard-stat-card text-center shadow">
+                <div class="card-body">
+                    <div style="font-size: 3rem; line-height: 1;">🔄</div>
+                    <h3 class="text-info">{{ active_requests }}</h3>
+                    <p class="text-muted mb-0">Active</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card profile-card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🏥 Hospital Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Hospital Name:</strong> {{ hospital_profile.hospital_name }}</p>
+                    <p><strong>Type:</strong> {{ hospital_profile.get_hospital_type_display }}</p>
+                    <p><strong>GST Number:</strong> {{ hospital_profile.gst_number }}</p>
+                    <p><strong>Location:</strong> {{ hospital_profile.city }}, {{ hospital_profile.district }}, {{ hospital_profile.state }}</p>
+                    <p><strong>Pincode:</strong> {{ hospital_profile.pincode }}</p>
+                    <p><strong>Address:</strong> {{ hospital_profile.address }}</p>
+                    <p><strong>Contact:</strong> {{ hospital_profile.phone_number }}</p>
+                    <p><strong>Email:</strong> {{ hospital_profile.email }}</p>
+                    <p>
+                        <strong>Verification Status:</strong>
+                        {% if hospital_profile.verification_status == 'pending' %}
+                            <span class="badge bg-warning">Pending Verification</span>
+                            <br><small class="text-muted">Your hospital will be verified by admin shortly.</small>
+                        {% elif hospital_profile.verification_status == 'verified' %}
+                            <span class="badge bg-success">Verified ✓</span>
+                        {% elif hospital_profile.verification_status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% endif %}
+                    </p>
+                    
+                    <a href="{% url 'hospitals:profile' %}" class="btn btn-primary">
+                        👁️ View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <!-- Emergency Request Button -->
+            {% if hospital_profile.is_verified %}
+            <div class="card emergency-card border-danger shadow-lg mb-3">
+                <div class="card-body text-center bg-light">
+                    <h5 class="text-danger mb-3">🚑 Emergency?</h5>
+                    <a href="{% url 'hospitals:create_emergency_request' %}" class="btn btn-danger btn-lg w-100 pulse-button">
+                        🚨 Emergency Blood Request
+                    </a>
+                    <small class="text-muted d-block mt-2">For life-threatening situations</small>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card quick-links-card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">⚡ Quick Actions</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% if hospital_profile.is_verified %}
+                        <a href="{% url 'hospitals:create_blood_request' %}" class="list-group-item list-group-item-action">
+                            ➕ Create Blood Request
+                        </a>
+                    {% else %}
+                        <div class="list-group-item text-muted">
+                            🔒 Create Blood Request (Requires Verification)
+                        </div>
+                    {% endif %}
+                    <a href="{% url 'hospitals:blood_requests_list' %}" class="list-group-item list-group-item-action">
+                        📋 View All Requests
+                    </a>
+                    <a href="{% url 'hospitals:confirm_donation' %}" class="list-group-item list-group-item-action">
+                        ✅ Confirm Donation
+                    </a>
+                    <a href="{% url 'hospitals:donation_confirmations_list' %}" class="list-group-item list-group-item-action">
+                        📝 View Confirmations
+                    </a>
+                    <a href="{% url 'hospitals:notifications' %}" class="list-group-item list-group-item-action">
+                        🔔 Notifications
+                        {% if unread_notifications_count > 0 %}
+                            <span class="badge bg-danger float-end">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if recent_requests %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-table shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🕐 Recent Blood Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Blood Group</th>
+                                    <th>Units Required</th>
+                                    <th>Urgency</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in recent_requests %}
+                                <tr>
+                                    <td><strong>{{ request.request_id }}</strong></td>
+                                    <td><span class="badge bg-danger">{{ request.blood_group }}</span></td>
+                                    <td>{{ request.units_required }} / {{ request.units_fulfilled }}</td>
+                                    <td>
+                                        {% if request.urgency == 'emergency' %}
+                                            <span class="badge bg-danger">EMERGENCY</span>
+                                        {% elif request.urgency == 'urgent' %}
+                                            <span class="badge bg-warning text-dark">URGENT</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ request.get_status_display }}</td>
+                                    <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'hospitals:blood_request_detail' request.id %}" class="btn btn-sm btn-primary">
+                                            👁️ View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'hospitals:blood_requests_list' %}" class="btn btn-primary">View All Requests</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        ℹ️ No blood requests yet. 
+        {% if hospital_profile.is_verified %}
+            <a href="{% url 'hospitals:create_blood_request' %}" class="alert-link">Create your first blood request</a>
+        {% else %}
+            Your hospital needs to be verified before creating requests.
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Recent Donations Section -->
+    {% if recent_donations %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card dashboard-table shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🩸 Recent Donation Confirmations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Donation ID</th>
+                                    <th>Donor ID</th>
+                                    <th>Donor Name</th>
+                                    <th>Blood Group</th>
+                                    <th>Units</th>
+                                    <th>Blood Bag ID</th>
+                                    <th>Date & Time</th>
+                                    <th>Staff</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for donation in recent_donations %}
+                                <tr>
+                                    <td><strong class="text-success">{{ donation.donation_id }}</strong></td>
+                                    <td><span class="badge bg-info">{{ donation.donor.donor_id }}</span></td>
+                                    <td>{{ donation.donor.full_name }}</td>
+                                    <td><span class="badge bg-danger">{{ donation.blood_group }}</span></td>
+                                    <td>{{ donation.units_donated }} unit{{ donation.units_donated|floatformat:0|pluralize }}</td>
+                                    <td><code>{{ donation.blood_bag_id }}</code></td>
+                                    <td>
+                                        {{ donation.donation_datetime|date:"M d, Y" }}<br>
+                                        <small class="text-muted">{{ donation.donation_datetime|time:"h:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        {{ donation.staff_name }}<br>
+                                        {% if donation.staff_id %}<small class="text-muted">ID: {{ donation.staff_id }}</small>{% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'hospitals:donation_confirmation_detail' donation.id %}" class="btn btn-sm btn-success">
+                                            👁️ View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <a href="{% url 'hospitals:donation_confirmations_list' %}" class="btn btn-success">View All Confirmations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

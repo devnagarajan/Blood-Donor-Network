@@ -1,0 +1,6 @@
+@echo off
+echo Restarting Django Server...
+taskkill /F /IM python.exe 2>nul
+timeout /t 2 /nobreak >nul
+echo Starting server with new email configuration...
+python manage.py runserver

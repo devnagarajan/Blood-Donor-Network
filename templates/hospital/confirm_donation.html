@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirm Donation - Hospital Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .step.active .step-number {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+    
+    .step-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    
+    .step.active .step-label {
+        color: #dc3545;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #dc3545;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="fw-bold mb-4" style="color: #2c3e50;">🩸 Confirm Blood Donation</h2>
+    
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div class="step-label">Enter Details</div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-label">Completed</div>
+        </div>
+    </div>
+    
+    <!-- Form -->
+    <div class="form-card">
+        <form method="post" id="donationForm">
+            {% csrf_token %}
+            
+            <!-- Donor Selection -->
+            <div class="form-section">
+                <h5 class="form-section-title">👤 Donor Information</h5>
+                <div class="row">
+                    <!-- Donor ID Input Field -->
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label fw-bold">🆔 Donor ID *</label>
+                        <div class="input-group">
+                            <input type="text" id="donor_id_input" class="form-control form-control-lg" 
+                                   placeholder="Enter Donor ID (e.g., DNR-2026-000001)" required />
+                            <button type="button" id="fetch_donor_btn" class="btn btn-danger btn-lg px-4">
+                                <span id="fetch_btn_text">🔍 Fetch Details</span>
+                                <span id="fetch_btn_loading" style="display:none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
+                                </span>
+                            </button>
+                        </div>
+                        <small class="text-muted">Enter donor ID to auto-fill all donation information</small>
+                        
+                        <!-- Success Message -->
+                        <div id="donor_info_box" style="display:none; margin-top:10px;" class="alert alert-success">
+                            <strong>✓ Donor Found:</strong> <span id="donor_info_text"></span>
+                        </div>
+                        
+                        <!-- Error Message -->
+                        <div id="donor_error_box" style="display:none; margin-top:10px;" class="alert alert-danger">
+                            <strong>✗ Error:</strong> <span id="donor_error_text"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden fields for form submission -->
+                    <input type="hidden" name="donor" id="hidden_donor_id" required>
+                </div>
+            </div>
+            
+            <!-- Donation Details -->
+            <div class="form-section">
+                <h5 class="form-section-title">🩸 Donation Details</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ form.blood_group.label_tag }}
+                        {{ form.blood_group }}
+                        {% if form.blood_group.errors %}
+                            <div class="text-danger small">{{ form.blood_group.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Donation Date *</label>
+                        <input type="date" name="donation_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Donation Time *</label>
+                        <input type="time" name="donation_time" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.units_donated.label_tag }}
+                        {{ form.units_donated }}
+                        <small class="text-muted">{{ form.units_donated.help_text }}</small>
+                        {% if form.units_donated.errors %}
+                            <div class="text-danger small">{{ form.units_donated.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.blood_bag_id.label_tag }}
+                        {{ form.blood_bag_id }}
+                        <small class="text-muted">{{ form.blood_bag_id.help_text }}</small>
+                        {% if form.blood_bag_id.errors %}
+                            <div class="text-danger small">{{ form.blood_bag_id.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Staff Details -->
+            <div class="form-section">
+                <h5 class="form-section-title">👨‍⚕️ Staff Information</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form.staff_name.label_tag }}
+                        {{ form.staff_name }}
+                        {% if form.staff_name.errors %}
+                            <div class="text-danger small">{{ form.staff_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.staff_id.label_tag }}
+                        {{ form.staff_id }}
+                        {% if form.staff_id.errors %}
+                            <div class="text-danger small">{{ form.staff_id.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Notes -->
+            <div class="form-section">
+                <h5 class="form-section-title">📝 Additional Information</h5>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        {{ form.notes.label_tag }}
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="text-danger small">{{ form.notes.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'hospitals:dashboard' %}" class="btn btn-secondary btn-lg">
+                    🏠 Back to Dashboard
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg px-5">
+                    ✓ Confirm Donation
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Fetch Donor Details by Donor ID
+document.getElementById('fetch_donor_btn').addEventListener('click', function() {
+    const donorId = document.getElementById('donor_id_input').value.trim();
+    
+    if (!donorId) {
+        showError('Please enter a donor ID');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('fetch_btn_text').style.display = 'none';
+    document.getElementById('fetch_btn_loading').style.display = 'inline';
+    document.getElementById('donor_info_box').style.display = 'none';
+    document.getElementById('donor_error_box').style.display = 'none';
+    
+    // Fetch donor details
+    fetch(`/hospital/api/donor/${donorId}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading
+            document.getElementById('fetch_btn_text').style.display = 'inline';
+            document.getElementById('fetch_btn_loading').style.display = 'none';
+            
+            if (data.success) {
+                // Show success message
+                document.getElementById('donor_info_text').textContent = 
+                    `${data.full_name} - ${data.blood_group} - ${data.phone_number} - ${data.city}`;
+                document.getElementById('donor_info_box').style.display = 'block';
+                
+                // Auto-fill form fields
+                autoFillDonorForm(data);
+            } else {
+                showError(data.error || 'Donor not found');
+            }
+        })
+        .catch(error => {
+            // Hide loading
+            document.getElementById('fetch_btn_text').style.display = 'inline';
+            document.getElementById('fetch_btn_loading').style.display = 'none';
+            
+            showError('Failed to fetch donor details. Please try again.');
+            console.error('Error:', error);
+        });
+});
+
+// Auto-fill form with donor data
+function autoFillDonorForm(data) {
+    // Set hidden donor ID field
+    document.getElementById('hidden_donor_id').value = data.pk;
+    
+    // Fill blood group
+    const bloodGroupSelect = document.getElementById('id_blood_group');
+    for (let i = 0; i < bloodGroupSelect.options.length; i++) {
+        if (bloodGroupSelect.options[i].value === data.blood_group) {
+            bloodGroupSelect.selectedIndex = i;
+            break;
+        }
+    }
+    
+    // Scroll to donation details section
+    const donationSection = document.querySelector('.form-section:nth-child(2)');
+    if (donationSection) {
+        donationSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+    }
+    
+    // Flash the blood group field
+    bloodGroupSelect.style.border = '3px solid #28a745';
+    setTimeout(() => {
+        bloodGroupSelect.style.border = '';
+    }, 2000);
+}
+
+function showError(message) {
+    document.getElementById('donor_error_text').textContent = message;
+    document.getElementById('donor_error_box').style.display = 'block';
+    
+    // Clear hidden field
+    document.getElementById('hidden_donor_id').value = '';
+}
+
+// Allow Enter key to trigger fetch
+document.getElementById('donor_id_input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('fetch_donor_btn').click();
+    }
+});
+
+// Prevent form submission if donor not fetched
+document.getElementById('donationForm').addEventListener('submit', function(e) {
+    const hiddenDonorId = document.getElementById('hidden_donor_id').value;
+    
+    if (!hiddenDonorId) {
+        e.preventDefault();
+        showError('Please fetch donor details first by clicking "Fetch Details" button');
+        
+        // Scroll to top
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        
+        return false;
+    }
+});
+</script>
+{% endblock %}
